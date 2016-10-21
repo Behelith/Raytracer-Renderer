@@ -45,9 +45,6 @@ void RenderContext::ScanConvertTriangle(float2 a, float2 b, float2 c, int side)
 	ScanConvertLIne(a, c, 0 + side);
 	ScanConvertLIne(a, b, 1 - side);
 	ScanConvertLIne(b, c, 1 - side);
-
-
-
 }
 
 void RenderContext::FillTriangle(float2 a, float2 b, float2 c)

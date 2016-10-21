@@ -25,35 +25,60 @@ void Stars3D::updateAndRender(RenderContext &bitmap, float delta, float fov)
 	unsigned int color;
 	int hWidth = bitmap.getWidth() / 2,
 		hHeight = bitmap.getHeight() / 2;
+	// to radians: degrees * pi / 180
 	float pi180 = 3.14159265359f / 180.0f;
-		// to radians: degrees * pi / 180
-	//cout << tanHFOV << endl;
+
+
+	int triangleBuilderCounter = 0;
 	
-	float tanHFOV =(float)tan((fov * pi180) / 2.0f);//tanges (fov /2)
+	int x1 = 0;
+	int y1 = 0;
+	int x2 = 0;
+	int y2 = 0;
+	
+	float tanHFOV =float(tan((fov * pi180) / 2.0f));//tangens (fov /2)
 
 	for (int i = 0; i < m_number; i++)
 	{
 
-		int val = (int)(255 * m_starZ[i]);
+		int val = int(255 * m_starZ[i]);
 		color = (val << 24 | val << 16);
 		//cout << hex << color << endl;
 
 		m_starZ[i] -= delta * m_speed;
 		if (m_starZ[i] <= 0) InitStar(i);
 
-		int x = (int)((m_starX[i] / (tanHFOV*m_starZ[i])) * hWidth + hWidth);
-		int y = (int)((m_starY[i] / (tanHFOV*m_starZ[i]))* hHeight + hHeight);
+		// dzielenie przez wspolrzedna Z (tangens pola widzenia * Z) sprawia wrazenie 3d
+		int x = int((m_starX[i] / (tanHFOV * m_starZ[i])) * hWidth + hWidth);
+		int y = int((m_starY[i] / (tanHFOV * m_starZ[i])) * hHeight + hHeight);
 
 		if (x < 0 || x >= bitmap.getWidth() ||
 			y < 0 || y >= bitmap.getHeight())
 		{
 			InitStar(i);
+			continue;
 		}
-		else
+		triangleBuilderCounter++;
+		if (triangleBuilderCounter == 1)
 		{
-			//bitmap->DrawPixel(x, y, 0x00fd09ff);
-			bitmap.DrawPixel(x, y, color);
+			x1 = x;
+			y1 = y;
 		}
+		else if (triangleBuilderCounter == 2)
+		{
+			x2 = x;
+			y2 = y;
+			//bitmap->DrawPixel(x, y, 0x00fd09ff);
+			//bitmap.DrawPixel(x, y, color);
+		}
+		else if (triangleBuilderCounter == 3)
+		{
+			triangleBuilderCounter = 0;
+			float2 v1(x1, y1), v2(x2, y2), v3(x, y);
+
+			bitmap.FillTriangle(v1, v2, v3);
+		}
+
 	}
 
 }

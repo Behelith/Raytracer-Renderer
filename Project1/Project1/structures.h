@@ -115,7 +115,7 @@ public:
 	friend	ostream& operator<< (ostream&, float3&);
 	float3 operator+ (float3 const& o);
 	float3 operator- (float3 const& o);		
-	float3 operator- ();					//przeksztalcenie wektora na odwrotny
+	float3 operator- ();						//przeksztalcenie wektora na odwrotny
 	float3 operator* (float const& o);
 	float3 operator* (float3 const& o);
 	float3 operator/ (float const& o);
