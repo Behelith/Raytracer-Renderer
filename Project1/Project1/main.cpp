@@ -130,6 +130,9 @@ void raytrace(RenderContext &bitmap)
 
 
 //Material
+Color blue(0.f, 0.f, 1.f),
+orange(255, 200, 15),
+green(15, 255, 100);
 
 int main(int argc, char * argv[])
 {
@@ -141,13 +144,19 @@ int main(int argc, char * argv[])
 	Sphere S(float3(0.3f, 0.0, 8.f), .15f);
 
 	Sphere scene[3] = {
-		Sphere(float3(0, 0, 0.0f), .15f),
-		Sphere(float3(0.3f, 0.0, 8.f), .15f),
-		Sphere(float3(-0.3f, 0.0, 4.f), .15f)
+		Sphere(float3(0, 0, 0.0f), 0.5f),
+		Sphere(float3(1.0f, 0.5f, 1.f), 0.5f),
+		Sphere(float3(-1.3f, 0.0, 0.5f), 0.5f)
 
 	};
 
-	Camera cam(float3 (0,0.0f,-10), float3(0,0,1), float3 (0,1,0), 60.f);
+	scene[2].setColor(green);
+	scene[1].setColor(blue);
+	scene[0].setColor(orange);
+
+	Camera cam
+	(float3 (0.2f, 0.0f, -2), float3(0,0,0), float3 (0,1,0), 60.f);
+
 	//cam.LookAt(float3(0, 0, 0));
 	cam.RenderImage(bitmap, scene);
 
@@ -179,6 +188,6 @@ int main(int argc, char * argv[])
 
 	Display display("okno_1", bitmap );
 
-	_getch();
+	//_getch();
 	return 0;
 }

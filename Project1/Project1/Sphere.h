@@ -1,7 +1,7 @@
 #pragma once
-#include "structures.h"
+#include "Primitive.h"
 
-class Sphere
+class Sphere : public Primitive
 {
 public:
 	Sphere();
@@ -10,6 +10,11 @@ public:
 	~Sphere() {};
 	float3 getCenter() { return center; }
 	float getRadius() { return radius; }
+	Color getColor() { return *m_color; }
+	void setCenter(float3 newCenter)
+	{
+		center = newCenter;
+	}
 private:
 	float3 center;
 	float radius;

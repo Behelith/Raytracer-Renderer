@@ -131,6 +131,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderContext.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Display.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="Primitive.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Sphere.h" />
