@@ -15,6 +15,7 @@ Color::Color(short r, short g, short b) : r(r), g(g), b(b), a(255) {}*/
 
 Color::Color(float r, float g, float b, float a) : m_r(r), m_g(g), m_b(b), m_a(a) {}
 Color::Color(float r, float g, float b) : m_r(r), m_g(g), m_b(b), m_a(1) {}
+Color::Color(int r, int g, int b) : m_r(int(r / 255)), m_g(int(g / 255)), m_b(int(b / 255)), m_a(1) {}
 
 //Color::Color(unsigned int color) : r(Color::getR(color)), g(Color::getG(color)), b(Color::getB(color)), a(Color::getA(color)) {}
 Color::Color() : m_r(0.0f), m_g(.0f), m_b(.0f), m_a(1.0f) {}

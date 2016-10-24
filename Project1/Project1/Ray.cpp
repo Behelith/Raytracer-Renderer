@@ -32,7 +32,7 @@ float Ray::intersect(Sphere &sphere, float distance)
 																					  */
 
 
-	float tmp;
+	float tmp = -1;
 	//if (d < 0) return -1;
 	if (d < 0) tmp = -1;	// delta ujemna == brak pierwiastkow
 
