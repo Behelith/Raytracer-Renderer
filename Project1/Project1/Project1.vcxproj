@@ -126,6 +126,8 @@
   <ItemGroup>
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraPerspective.cpp" />
+    <ClCompile Include="CameraOrtho.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="main.cpp" />
@@ -141,6 +143,8 @@
   <ItemGroup>
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraPerspective.h" />
+    <ClInclude Include="CameraOrtho.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Material.h" />

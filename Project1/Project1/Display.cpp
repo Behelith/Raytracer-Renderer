@@ -39,7 +39,11 @@ Display::Display(char * title, RenderContext &displayImage) : windowTitle(title)
 			if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
 				exit = true;
 			if (e.key.keysym.sym == SDLK_d)
-				displayImage.Clear(0xcc0000);
+			{
+
+			//	displayImage.Clear(0xcc0000);
+			}
+
 			else if (e.key.keysym.sym == SDLK_p)
 				displayImage.SaveAsTGA("tst4.tga");
 			else if (e.key.keysym.sym == SDLK_q)
@@ -63,7 +67,7 @@ Display::Display(char * title, RenderContext &displayImage) : windowTitle(title)
 		currentTime = getTime;
 		float delta = getDelay() / 1000000000.0f; // czy musze podstawiac? 
 
-		//starfield.updateAndRender(displayImage, delta, FOV);
+		starfield.updateAndRender(displayImage, delta, FOV);
 		previousTime = currentTime;
 
 		float2 a = float2(400, 100), b = float2(100, 200), c = float2(80, 300);

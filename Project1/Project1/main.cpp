@@ -8,7 +8,8 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Ray.h"
-#include "Camera.h"
+#include "CameraPerspective.h"
+#include "CameraOrtho.h"
 //#include "Image.h"
 
 
@@ -130,9 +131,9 @@ void raytrace(RenderContext &bitmap)
 
 
 //Material
-Color blue(0.f, 0.f, 1.f),
-orange(255, 200, 15),
-green(15, 255, 100);
+Color c1(255,200,15),
+c2(255, 127, 40),
+c3(255, 0, 0);
 
 int main(int argc, char * argv[])
 {
@@ -144,21 +145,20 @@ int main(int argc, char * argv[])
 	Sphere S(float3(0.3f, 0.0, 8.f), .15f);
 
 	Sphere scene[3] = {
-		Sphere(float3(0, 0, 0.0f), 0.5f),
-		Sphere(float3(1.0f, 0.5f, 1.f), 0.5f),
-		Sphere(float3(-1.3f, 0.0, 0.5f), 0.5f)
+		Sphere(float3(0, 0, 0.0f), 0.4f),
+		Sphere(float3(1.6f, 0.0f, 0.2f), 0.4f),
+		Sphere(float3(-1.6f, 0.0, 0.1f), 0.4f)
 
 	};
 
-	scene[2].setColor(green);
-	scene[1].setColor(blue);
-	scene[0].setColor(orange);
+	scene[2].setColor(c3);
+	scene[1].setColor(c1);
+	scene[0].setColor(c2);
 
-	Camera cam
-	(float3 (0.2f, 0.0f, -2), float3(0,0,0), float3 (0,1,0), 60.f);
-
+	CameraPerspective cam	(float3 (0.0f, 0.0f, -2), float3(0,0,0), float3 (0,1,0), 60.f);
+//	CameraOrtho cam(float3(0.0f, 0.0f, -3.0f), float3(0, 0, 0), float3(0, 1, 0));
 	//cam.LookAt(float3(0, 0, 0));
-	cam.RenderImage(bitmap, scene);
+	//cam.RenderImage(bitmap, scene);
 
 //
 //	auto start = get_time::now();
