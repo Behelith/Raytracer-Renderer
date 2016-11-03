@@ -39,4 +39,6 @@ public:
 	static int bToInt(unsigned int color);
 	static int aToInt(unsigned int color);
 
+	bool IsSimilar(Color b, float epsilon = 0);
+
 };

@@ -1,5 +1,7 @@
 #include "Color.h"
-
+#include <complex.h>
+#include <valarray>
+#include <iostream>
 
 
 /*
@@ -51,6 +53,18 @@ int Color::gToInt(unsigned int color) { return (color >> 16) & 0xff; }
 int Color::bToInt(unsigned int color) { return (color >> 8) & 0xff; }
 int Color::aToInt(unsigned int color) { return (color)& 0xff; }
 
+bool Color::IsSimilar(Color b, float epsilon)
+{
+	//*
+	if (
+		std::abs(getR() - b.getR()) >= epsilon ||
+		std::abs(getG() - b.getG()) >= epsilon ||
+		std::abs(getB() - b.getB()) >= epsilon
+		)
+
+		return false;
+		else return true;
+}
 
 Color Color::operator+ (Color & o) { return Color(m_r + o.getR(), m_g + o.getG(), m_b + o.getB(), m_a + o.getA()); }
 void Color::operator+= (Color & o) { m_r = m_r + o.getR(); m_g = m_g + o.getG(); m_b = m_b + o.getB(); m_a = m_a + o.getA(); }

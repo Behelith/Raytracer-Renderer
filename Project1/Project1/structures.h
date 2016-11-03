@@ -52,6 +52,10 @@ public:
 	float GetX();
 	float GetY();
 
+
+	void SetX(float x);
+	void SetY(float y);
+
 	float2(float x, float y);
 	float2();
 	~float2();
@@ -70,7 +74,8 @@ public:
 	float2 operator+ (float2 & o);
 	float2 operator* (float2 & o);
 	float2 operator- (float2 & o);
-	float2 operator* (float & o);
+	float2 operator* (const float& o);
+
 
 };
 

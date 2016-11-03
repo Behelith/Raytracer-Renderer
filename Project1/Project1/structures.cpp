@@ -16,6 +16,9 @@ inline float uRand() {
 float float2::GetX(){	return m_x;}
 float float2::GetY(){	return m_y;}
 
+void float2::SetX(float x) { m_x = x; }
+void float2::SetY(float y) { m_y = y; }
+
 float2::float2(float x, float y) : m_x(x), m_y(y) {}
 float2::float2() : m_x(0), m_y(0) {}
 float2::~float2() {}
@@ -34,13 +37,15 @@ inline float float2::length() { return sqrt(m_x * m_x + m_y * m_y); }
 float2 float2::operator+ (float2 & o) { return float2(GetX() + o.GetX(), GetY() + o.GetY()); }
 float2 float2::operator* (float2 & o) { return float2(GetX()*o.GetX(), GetY()*o.GetY()); }
 float2 float2::operator- (float2 & o) { return float2(GetX() - o.GetY(), GetY() - o.GetX()); }
-float2 float2::operator* (float & o) { return float2(GetX() * o, GetY()*o); }
+float2 float2::operator*(const float & o) { return float2(GetX() * o, GetY()*o); }
+
 
 ostream& operator<<(ostream& str, float2& o) { return str << o.GetX() << ", " << o.GetY() << ", "; }
 
 #pragma endregion 
 
 #pragma region regionFloat3
+
 
 float3::float3() {}
 float3::float3(float x, float y, float z) : x(x), y(y), z(z) {}
