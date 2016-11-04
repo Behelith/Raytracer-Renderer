@@ -22,10 +22,10 @@ static auto currentTime = get_time::now();
 static auto previousTime = get_time::now();
 
 static float getFOV() { return FOV; }
-inline static long getDelay()
+inline static int64_t getDelay()
 {
 	auto diff = currentTime - previousTime;
-	long tmp = chrono::duration_cast<ns>(diff).count();
+	int64_t tmp = chrono::duration_cast<ns>(diff).count();
 	//cout << "Elapsed time is :  " << tmp << " ns " << endl;
 	return tmp;
 }

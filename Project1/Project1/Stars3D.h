@@ -6,8 +6,8 @@ class Stars3D
 {
 private:
 	float m_spread,
-		m_speed,
-		m_number;
+		m_speed;
+		int m_number;
 
 	float *m_starX,
 		*m_starY,

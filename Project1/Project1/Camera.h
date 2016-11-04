@@ -2,7 +2,8 @@
 #include "structures.h"
 #include "RenderContext.h"
 #include "Primitive.h"
-#include "Ray.h"
+//#include "Ray.h"
+#include "Sphere.h"
 
 class Camera 
 {
@@ -22,13 +23,16 @@ protected:
 
 public:
 	Camera();
+
+	//kamera perspektywiczna
 	Camera(float3 location, float3 direction, float3 up, float fov);
+	// kamera ortogonalna
 	Camera(float3 location, float3 direction, float3 up);
 	
 	~Camera();
 
 	void LookAt(float3 target);
-	Color Sampling(float2 sCenter, float2 dimensions, Sphere * objects, int level = 0);
-	void RenderImage (RenderContext &bitmap, Sphere *objects);
+	Color Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, int level = 0);
+	void RenderImage (RenderContext &bitmap, vector<Primitive*> &objects);
 };
 

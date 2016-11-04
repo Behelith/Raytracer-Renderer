@@ -85,8 +85,8 @@ void Stars3D::updateAndRender(RenderContext &bitmap, float delta, float fov)
 
 void Stars3D::InitStar(int index)
 {
-	m_starX[index] = 2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) - 0.5) * m_spread;
-	m_starY[index] = 2 * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) - 0.5) * m_spread;
+	m_starX[index] = 2.f * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) - 0.5f) * m_spread;
+	m_starY[index] = 2.f * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) - 0.5f) * m_spread;
 	m_starZ[index] = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) + eps5) * m_spread;
 
 }
