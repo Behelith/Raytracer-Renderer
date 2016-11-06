@@ -3,7 +3,6 @@
 #include <SDL.h>
 #include "structures.h"
 #include "Stars3D.h"
-#include "Triangles.h"
 
 
 class Display

@@ -9,6 +9,7 @@ private:
 	int *m_scanBuffer;
 	void ScanConvertLIne(float2 a, float2 b, int side);
 public:
+	unsigned int * m_zbuffer;
 	RenderContext(int width, int height);
 	~RenderContext();
 	void DrawScanBuffer(int yCoord, int xMin, int xMax);

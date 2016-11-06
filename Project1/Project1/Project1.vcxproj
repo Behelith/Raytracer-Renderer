@@ -130,6 +130,8 @@
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="OBJParser.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Ray.cpp" />
@@ -137,6 +139,7 @@
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Stars3D.cpp" />
     <ClCompile Include="structures.cpp" />
+    <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h" />
@@ -144,13 +147,20 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="OBJParser.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderContext.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Stars3D.h" />
     <ClInclude Include="structures.h" />
+    <ClInclude Include="Triangle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Raytracer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

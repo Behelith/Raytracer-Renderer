@@ -26,6 +26,8 @@ void RenderContext::ScanConvertLIne(float2 a, float2 b, int side)
 
 RenderContext::RenderContext(int width, int height) : Bitmap (width, height)
 {
+	m_zbuffer = new unsigned int[width * height];
+
 	m_scanBuffer = new int[height * 2];
 }
 
@@ -52,7 +54,7 @@ void RenderContext::FillTriangle(float2 a, float2 b, float2 c)
 	// a = min, b = mid, c = max *w dol*
 	//float2 min = a, mid = b, max = c;
 	
-	if (a.GetY() > a.GetY())
+	if (a.GetY() > b.GetY())
 	{
 		float2 tmp = b;
 		b = a;

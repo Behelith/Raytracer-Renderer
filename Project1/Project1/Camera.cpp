@@ -148,6 +148,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 				//	cout << isect << endl;
 
 				objectHit = objects[j];
+				//cout << hex << objectHit->getColor().toHex()<<endl;
 				//objectHit = new Sphere(float3(0, 0, 0.4f), 0.4f);
 			}
 		}
