@@ -54,13 +54,13 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OBJParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

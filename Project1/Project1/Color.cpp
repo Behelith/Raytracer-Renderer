@@ -15,6 +15,23 @@ Color::Color() : m_color(0x000000ff) {}
 /*Color::Color(short r, short g, short b, short a) : r(r), g(g), b(b), a(a) {}
 Color::Color(short r, short g, short b) : r(r), g(g), b(b), a(255) {}*/
 
+Color Color::BLACK = Color(0, 0, 0);
+Color Color::RED = Color(1.f, 0.f, 0.f);
+Color Color::GREEN = Color(0.f, 1.f, 0.f);
+Color Color::BLUE = Color(0.f, 0.f, 1.f);
+Color Color::DVIOLET = Color(50, 0, 75);
+Color Color::LVIOLET = Color(133, 96, 168);
+Color Color::YELLOW = Color(250, 250, 10);
+
+/*
+c1(255, 200, 15),
+c2(255, 127, 40),
+c3(1.f, 0.f, 0.f),
+c4(.0f, 1.0f, 0.f),
+c5(.0f, 0.0f, 1.f),
+c6(1.0f, 0.0f, 1.f);
+*/
+
 Color::Color(float r, float g, float b, float a) : m_r(r), m_g(g), m_b(b), m_a(a) {}
 Color::Color(float r, float g, float b) : m_r(r), m_g(g), m_b(b), m_a(1) {}
 Color::Color(int r, int g, int b) : m_r(float(r) / 255), m_g(float(g) / 255), m_b(float(b) / 255), m_a(1) {}

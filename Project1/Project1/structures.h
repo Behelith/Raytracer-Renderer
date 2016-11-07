@@ -20,16 +20,6 @@ using get_time = chrono::steady_clock;
 static float FOV = 100.0f;
 #define getTime get_time::now();
 
-static Color C1(1.f, 0.f, 0.f);
-static Color C2(0.f, 1.f, 0.f);
-static Color C3(0.f, 0.f, 1.f);
-static Color C4(1.f, 1.f, 0.f);
-static Color C5(0.f, 1.f, 1.f);
-static Color C6(1.f, 0.f, 1.f);
-static Color C7(133, 96, 168);
-static Color C8(50, 0, 75);
-
-
 static auto currentTime = get_time::now();
 static auto previousTime = get_time::now();
 

@@ -10,8 +10,10 @@
 //c6(1.0f, 0.0f, 1.f);
 
 
+
 class Color
 {
+
 private:
 	float m_r, m_g, m_b, m_a;
 
@@ -50,5 +52,14 @@ public:
 	static int aToInt(unsigned int color);
 
 	bool IsSimilar(Color b, float epsilon = 0);
+
+	//const
+	static  Color BLACK;
+	static  Color RED;
+	static  Color GREEN;
+	static  Color BLUE;
+	static  Color LVIOLET;
+	static  Color DVIOLET;
+	static  Color YELLOW;
 
 };

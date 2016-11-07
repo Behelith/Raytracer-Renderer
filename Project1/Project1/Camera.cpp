@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Sphere.h"
+#include <Brofiler.h>
 
 Camera::Camera()
 {
@@ -37,11 +38,14 @@ Camera::Camera(float3 location, float3 direction, float3 up, float fov)
 	m_w = m_location - m_target;
 	m_w.unitise();
 
+	//m_u = float3::cross(m_w,-m_up); // right vector
 	m_u = float3::cross(m_up, m_w); // right vector
+
 	//m_u = float3::cross(m_w, m_up); // right vector
-	m_v = float3::cross(m_w, m_u); //
+		m_v = float3::cross(m_w, m_u); //
 
 	m_distance = 1;
+
 	m_u = -m_u;
 }
 
@@ -87,6 +91,8 @@ void Camera::LookAt(float3 target)
 
 Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, int level)
 {
+	BROFILER_CATEGORY ("sampling", Profiler::Color::Yellow)
+
 	//	cout << level << endl;
 	Color bg(0.0f, .0f, 0.0f);
 	Color suma(0.0f, 0.0f, 0.0f);
@@ -112,7 +118,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 	//dla kazdego wierzcholka policz i wyslij promien w scene (czyli minimum 4 promienie)
 	for (int i = 0; i < 4; i++)
 	{
-		Primitive *objectHit; //najblizszy obiekt
+		Primitive *objectHit = NULL; //najblizszy obiekt
 		float lastDistance = INFINITY; //odleglosc do aktualnego, najblizszego
 		float3 pxRay = m_u * verts[i].GetX() + m_v * verts[i].GetY() + m_w * -m_distance;		//piksel w przestrzeni
 		Ray r;// promien
@@ -137,7 +143,6 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			*/
 		}
 
-		//ile obiektow w scenie... !!!!szukanie koloru: (( jak dzialal ten FOREACH !?))
 		for (uint8_t j = 0; j < objects.size(); j++)
 		{
 			float isect = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
@@ -145,15 +150,11 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			if (isect != -1 && isect < lastDistance)
 			{
 				lastDistance = isect;
-				//	cout << isect << endl;
-
 				objectHit = objects[j];
-				//cout << hex << objectHit->getColor().toHex()<<endl;
-				//objectHit = new Sphere(float3(0, 0, 0.4f), 0.4f);
 			}
 		}
 		//jesli znalazl cokolwiek to pobierz kolor obiektu
-		if (lastDistance < INFINITY)	colors[i] += objectHit->getColor();// *(1 - pr);
+		if (lastDistance < INFINITY && objectHit != NULL)	colors[i] += objectHit->getColor() * ( lastDistance/5);// *(1 - pr);
 		else colors[i] += bg;// *(1 - pr);
 	}
 
@@ -165,6 +166,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 	//maksymalny poziom rekurencji; jesli kolory sie nie roznia, albo osiagnieto max. rek. to zwroc usredniony kolor
 	if (level >=2 || colorDiff)
 	{
+
 		for (int i = 0; i < 4; i++)
 		{
 			suma += colors[i];
@@ -197,6 +199,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 
 void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 {
+	BROFILER_CATEGORY( "RenderImage", Profiler::Color::Orchid )
 	//Ray r(float3(0, 0, 0), float3(0, 0, 1));
 	//for (int i = 0; i < objects.size();i++)		cout << hex << objects[i]->Intersect(r, 40) << endl;
 

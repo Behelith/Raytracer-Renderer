@@ -1,5 +1,5 @@
 #include "Triangle.h"
-
+#include <Brofiler.h>
 
 
 Triangle::Triangle() //: m_verts[0](float3(0,0,0)), m_b(float3(0, 0, 0)), m_c(float3(0, 0, 0))
@@ -53,6 +53,8 @@ Triangle::~Triangle()
 
 float Triangle::Intersect(Ray& ray, float distance)
 {
+	BROFILER_CATEGORY ("intersect", Profiler::Color::Green)
+
 	//edge 1
 	float3 e1 = *m_verts[1] - *m_verts[0];
 	float3 e2 = *m_verts[2] - *m_verts[0];

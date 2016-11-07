@@ -4,42 +4,11 @@
 
 Mesh::Mesh()
 {
-
-
 }
 
-Mesh::Mesh(float a)
+Mesh::Mesh(string filename)
 {
-	//setColor(Color(0.f, 0.f, 0.5f));
-
-	m_vertices.push_back(float3(-0.500000, -0.200000, 0.500000));
-	m_vertices.push_back(float3(0.000000, 0.800000, 0.000000));
-	m_vertices.push_back(float3(-0.500000, -0.200000, -0.500000));
-	m_vertices.push_back(float3(0.500000, -0.200000, 0.500000));
-	m_vertices.push_back(float3(0.500000, -0.200000, -0.500000));
-
-	float3	v1(-.5, -.2, -.5);
-
-	cout << "mesh" << endl;
-	//	Triangle t(&m_vertices[1], &m_vertices[1], &m_vertices[1], Color(1,1,1));
-
-	//Color
-	//	c1(255, 0, 0),
-	//	c2(0, 255, 0);
-
-	m_triangles.push_back(Triangle(&m_vertices[1], &m_vertices[2], &m_vertices[0], C1));
-	m_triangles.push_back(Triangle(&m_vertices[1], &m_vertices[4], &m_vertices[2], C2));
-	m_triangles.push_back(Triangle(&m_vertices[1], &m_vertices[3], &m_vertices[4], C3));
-	m_triangles.push_back(Triangle(&m_vertices[1], &m_vertices[0], &m_vertices[3], C4));
-	m_triangles.push_back(Triangle(&m_vertices[2], &m_vertices[3], &m_vertices[0], C5));
-	m_triangles.push_back(Triangle(&m_vertices[2], &m_vertices[4], &m_vertices[3], C6));
-
-	//for (Triangle t : m_triangles)
-	//cout << hex << t.getColor().toHex() << endl;
-
-
-	//m_triangles.push_back(Triangle( float3(1,1,1), float3(1,1,1),float3(1,1,1) ));
-
+	importOBJ(filename);
 }
 
 Mesh::~Mesh()
@@ -146,8 +115,8 @@ bool Mesh::importOBJ(string filename)
 				c = &m_vertices[stoi(tmp2[0]) - 1];
 				tmp2.clear();
 
-				if (i == 1) m_triangles.push_back(Triangle(a, b, c, C7));
-				else m_triangles.push_back(Triangle(a, b, c, C8));
+				if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
+				else m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
 			}
 			else if ( !isTextured && tmp1[0] == "f")
 			{
@@ -166,8 +135,8 @@ bool Mesh::importOBJ(string filename)
 				c = &m_vertices[stoi(tmp2[0]) - 1];
 				tmp2.clear();
 
-				if (i == 1) m_triangles.push_back(Triangle(a, b, c, C7));
-				else m_triangles.push_back(Triangle(a, b, c, C8));
+				if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
+				else m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
 			}
 		//	line.
 			i = (i + 1) % 2;
@@ -177,6 +146,80 @@ bool Mesh::importOBJ(string filename)
 
 	cout << "vertexow: " << m_vertices.size() << endl;
 	cout << "trojkatow: " << m_triangles.size() << endl;
+
+	return true;
+}
+
+bool Mesh::importOBJ(string filename, vector<Mesh> &meshes)
+{
+	//Mesh *mesh = nullptr;
+
+	string line;
+	int i = 0;
+	int objectsCounter = 0;
+	int index =-1 ;
+	bool isTextured = false;
+
+	ifstream myfile(filename);
+
+	if (myfile.is_open())
+	{
+		while (getline(myfile, line))
+		{
+			vector <string> tmp1;
+			split(line, " ", tmp1);
+			if (tmp1[0] == "o")
+			{
+				meshes.push_back(Mesh());
+			//	isTextured = false;
+				index = meshes.size()-1;
+				cout << "index: " << index << endl;
+			}
+
+			if (index == 0)
+			{
+				if (tmp1[0] == "v")
+				{
+					meshes[index].getVertices().push_back(float3(stof(tmp1[1]), stof(tmp1[2]), stof(tmp1[3])));
+				}
+				else if (tmp1[0] == "vt") isTextured = true;
+				else if (tmp1[0] == "f")
+				{
+					vector <string> tmp2;
+					float3 *a, *b, *c;
+
+					split(tmp1[1], "/", tmp2);
+					a = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
+					tmp2.clear();
+
+					split(tmp1[2], "/", tmp2);
+					b = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
+					tmp2.clear();
+
+					split(tmp1[3], "/", tmp2);
+					c = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
+					tmp2.clear();
+
+					if (i == 1) meshes[index].getTriangles().push_back(Triangle(a, b, c, Color::DVIOLET));
+					else meshes[index].getTriangles().push_back(Triangle(a, b, c, Color::LVIOLET));
+				//	cout << "tx " << endl;
+				}
+
+				//	line.
+				i = (i + 1) % 2;
+			}
+		}
+
+		myfile.close();
+	}
+
+//	cout << "vertexow: " << meshes[0]. << endl;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+
+		cout << "verteksow: " << meshes[i].getVertices().size() << endl;
+		cout << "trojkatow: " << meshes[i].getTriangles().size() << endl;
+	}
 
 	return true;
 }
