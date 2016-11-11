@@ -98,7 +98,7 @@ bool Mesh::importOBJ(string filename)
 				m_vertices.push_back(float3(stof(tmp1[1]), stof(tmp1[2]), stof(tmp1[3])));
 			}
 			else if (tmp1[0] == "vt") isTextured = true;
-			else if (isTextured && tmp1[0] == "f" )
+			else if (/*isTextured && */tmp1[0] == "f" )
 			{
 				vector <string> tmp2;
 				float3 *a, *b, *c;
@@ -115,10 +115,26 @@ bool Mesh::importOBJ(string filename)
 				c = &m_vertices[stoi(tmp2[0]) - 1];
 				tmp2.clear();
 
-				if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
-				else m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
+			//	if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
+			//	else
+				switch (i)
+				{
+				case 0:
+					m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
+					break;
+				case 1:
+					m_triangles.push_back(Triangle(a, b, c, Color::BLUE));
+					break;
+
+				case 2:
+					m_triangles.push_back(Triangle(a, b, c, Color::YELLOW));
+					break;
+				default:
+					m_triangles.push_back(Triangle(a, b, c, Color::RED));
+					break;
+				}
 			}
-			else if ( !isTextured && tmp1[0] == "f")
+			/*else if ( !isTextured && tmp1[0] == "f")
 			{
 				vector <string> tmp2;
 				float3 *a,* b, *c;
@@ -135,11 +151,12 @@ bool Mesh::importOBJ(string filename)
 				c = &m_vertices[stoi(tmp2[0]) - 1];
 				tmp2.clear();
 
-				if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
-				else m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
-			}
+			//	if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
+				//else
+					m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
+			}*/
 		//	line.
-			i = (i + 1) % 2;
+			i = (i + 1) % 4;
 		}
 		myfile.close();
 	}

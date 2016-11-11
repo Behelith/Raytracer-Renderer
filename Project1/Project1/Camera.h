@@ -32,7 +32,7 @@ public:
 	~Camera();
 
 	void LookAt(float3 target);
-	Color Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, int level = 0);
+	Color Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, float &zDepth, int level = 0);
 	void RenderImage (RenderContext &bitmap, vector<Primitive*> &objects);
 };
 

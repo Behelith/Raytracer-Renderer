@@ -31,7 +31,6 @@ Camera::Camera(float3 location, float3 direction, float3 up, float fov)
 	m_fov = fov;
 	isOrthogonal = false;
 
-
 	m_location = location;
 
 	//direction - gdzie patrzy kamea
@@ -89,13 +88,17 @@ void Camera::LookAt(float3 target)
 
 }
 
-Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, int level)
+Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, float &zDepth, int level)
 {
 	BROFILER_CATEGORY ("sampling", Profiler::Color::Yellow)
 
 	//	cout << level << endl;
 	Color bg(0.0f, .0f, 0.0f);
 	Color suma(0.0f, 0.0f, 0.0f);
+
+	float zVerts[4] = { 0.f,0.f,0.f,0.f };
+	float zSuma = 0.f;
+	float hits = 0;
 
 	//tablica z wierzcholkami piksela (lg,pg,pd,ld)
 	float2 verts[4] = {
@@ -123,21 +126,20 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		float3 pxRay = m_u * verts[i].GetX() + m_v * verts[i].GetY() + m_w * -m_distance;		//piksel w przestrzeni
 		Ray r;// promien
 
-
 		//Ray r(m_location, pxRay);
 		//	
 		if (isOrthogonal) //orto
 		{
-		//	m_direction = m_w;	//perspective
+			//	m_direction = m_w;	//perspective
 			r = Ray(pxRay, m_direction);
 		}
 		else
 		{
 			pxRay.unitise();
-			 r = Ray(m_location, pxRay);
+			r = Ray(m_location, pxRay);
 
-			/* TO JEST MAGIA xD... jak wysylam promien z piksela to wychodzi to wieeeeeeeeelkie; 
-			m_direction = pxRay - m_location;
+			/* TO JEST MAGIA xD... jak wysylam promien z piksela to wychodzi to wieeeeeeeeelkie;
+			m_direction = pxRay - m_locat ion;
 			m_direction = -m_direction;
 			m_direction.unitise();
 			*/
@@ -154,8 +156,18 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			}
 		}
 		//jesli znalazl cokolwiek to pobierz kolor obiektu
-		if (lastDistance < INFINITY && objectHit != NULL)	colors[i] += objectHit->getColor() * ( lastDistance/5);// *(1 - pr);
-		else colors[i] += bg;// *(1 - pr);
+		if (lastDistance < INFINITY && objectHit != NULL)
+		{
+			colors[i] += objectHit->getColor();// *(1 - pr);
+			zVerts[i] = lastDistance;
+			hits += 1.f;
+		}
+		else
+		{
+			colors[i] += bg;// *(1 - pr);
+			zVerts[i] = 50.f;
+
+		}
 	}
 
 	//czy kolory roznia sie od siebie (margines 0.01)
@@ -170,7 +182,12 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		for (int i = 0; i < 4; i++)
 		{
 			suma += colors[i];
+			zSuma += zVerts[i];
+
 		}
+		//if (hits >0
+			zDepth = zSuma / 4.f;// 4.f;
+	//	else zDepth = INFINITY;// 4.f;
 		return suma / 4.0f;
 	}
 	// jesli kolory sie roznia:
@@ -185,11 +202,15 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		//ustal kolor kazdego fragmentu, (myyyk rekurencja xD)
 		for (int i = 0; i < 4; i++)
 		{
-			colors[i] = Sampling(verts[i], dimensions * 0.5, objects, level + 1);
+			colors[i] = Sampling(verts[i], dimensions * 0.5, objects, zVerts[i], level + 1);
 			suma += colors[i];
+			zSuma += zVerts[i];
+
 
 		}
 		// zwroc usredniony kolor
+		zDepth = zSuma / 4.f;
+		//if (zDepth == 0) cout << "\n fsfasf\n\n";
 		return suma / 4.0f;
 
 	}
@@ -200,13 +221,10 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 {
 	BROFILER_CATEGORY( "RenderImage", Profiler::Color::Orchid )
-	//Ray r(float3(0, 0, 0), float3(0, 0, 1));
-	//for (int i = 0; i < objects.size();i++)		cout << hex << objects[i]->Intersect(r, 40) << endl;
 
+	float zMin = 100.f, zMax = 0.f;
+	float zDepth = 0;
 
-//	float *zBuffer = new float[bitmap.getWidth() * bitmap.getHeight()];
-//	fill(zBuffer, zBuffer + (bitmap.getWidth() * bitmap.getHeight()), INFINITY);
-	float zMin = INFINITY, zMax = 0.f;
 	float aspectRatio = float(bitmap.getWidth()) / float(bitmap.getHeight());
 	float pi180 = 3.14159265359f / 180.0f;
 	float tanHFOV;
@@ -234,7 +252,9 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 			if (aspectRatio <= 1.f)
 			{
 				pCenter.SetX((2.f * (x + 0.5f) * pxDimensions.GetX() - 1.f) * tanHFOV);
-				pCenter.SetY((2.f * (y + 0.5f) * pxDimensions.GetY() - 1.f) / aspectRatio * tanHFOV);
+				//pCenter.SetY((2.f * (y + 0.5f) * pxDimensions.GetY() - 1.f) / aspectRatio * tanHFOV);
+				pCenter.SetY((1.f - 2.f * (y + 0.5f) * pxDimensions.GetY())   /aspectRatio * tanHFOV);
+
 			}
 			else
 			{
@@ -243,9 +263,12 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 			}
 
 			//color z antialiasingiem
-			unsigned int tmp = Sampling(pCenter, pxDimensions*0.5f, objects).toHex();
+			unsigned int tmp = Sampling(pCenter, pxDimensions*0.5f, objects, zDepth).toHex();
 
+			if (zDepth > zMax) zMax = zDepth;
+			if (zDepth < zMin && zDepth) zMin = zDepth;
 			bitmap.DrawPixel(x, y, tmp);
+			if (zDepth < INFINITY) bitmap.m_zbuffer[x + y *bitmap.getWidth()] = zDepth;
 
 /*	
 			float3 pxRay = m_u * pxc + m_v * pyc + m_w * -m_distance;
@@ -270,14 +293,26 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 			}*/
 		}
 	}
-
+	
+	
+	
+	
+	
+	cout << "zMin: " << zMin << "\tzMax: " << zMax << endl;
+	
+	
+	
+	
+	
+	
+	
 	/*
 		float d = zMax - zMin;
 		for (int i = 0; i < bitmap.getHeight() * bitmap.getWidth(); i++)
 		{
-			if (zBuffer[i] < INFINITY)
+			if (bitmap.m_zbuffer[i] < INFINITY)
 			{
-				float pr = (zBuffer[i]-zMin )/ d;
+				float pr = (bitmap.m_zbuffer[i]-zMin )/ d;
 				//Color col = Color(1.f, 1.f, 1.f) * (1 - pr);
 				Color col = 
 					Color(bitmap.getComponents()[i])

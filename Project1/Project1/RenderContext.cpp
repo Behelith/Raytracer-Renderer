@@ -26,7 +26,9 @@ void RenderContext::ScanConvertLIne(float2 a, float2 b, int side)
 
 RenderContext::RenderContext(int width, int height) : Bitmap (width, height)
 {
-	m_zbuffer = new unsigned int[width * height];
+	m_zbuffer = new float[width * height];
+	fill(m_zbuffer, m_zbuffer + (width * height), INFINITY);
+
 
 	m_scanBuffer = new int[height * 2];
 }
@@ -34,6 +36,7 @@ RenderContext::RenderContext(int width, int height) : Bitmap (width, height)
 
 RenderContext::~RenderContext()
 {
+	delete[] m_zbuffer;
 }
 
 void RenderContext::DrawScanBuffer(int yCoord, int xMin, int xMax)

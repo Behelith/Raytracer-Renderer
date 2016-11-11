@@ -22,7 +22,7 @@ int main(int argc, char * argv[])
 {
 
 	auto start = get_time::now();
-	int w = 500, h = 350;
+	int w = 700, h = 700;
 
 	RenderContext bitmap(w, h);
 	vector <Mesh> meshes;
@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
 
 
 	//sc.push_back(new Sphere(float3(1.2f, 0, 0.8f), 0.3f, Color::YELLOW));
-	//sc.push_back(new Sphere(float3(-1.2f, 0, 0.0f), 0.3f, Color::RED));
+	//sc.push_back(new Sphere(float3(-1.2f, 0, 0.0f), 0.9f, Color::RED));
 
 	//Mesh::importOBJ("obj/s2.obj", meshes);
 
@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
 	cout << " models: " << sc.size() << endl;
 
 
-	Camera cam(float3(0.0f, 5.8f, -4.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
+	Camera cam(float3(2.0f, 1.f, -2.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
 	//Camera cam	(float3 (0.0f, 0.0f, -2), float3(0,0,0), float3 (0,1,0)); // ortho
 	//while (true)
 	{
