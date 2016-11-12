@@ -1,5 +1,7 @@
 #pragma once
+#include <ostream>
 
+using namespace std;
 //
 //Color
 //c1(255, 200, 15),
@@ -45,6 +47,9 @@ public:
 	Color operator* (Color & a);
 	Color operator* (float const& a);
 	Color operator/ (float const& a);
+	//ostream& operator<<(ostream& str, float2& o) { return str << o.GetX() << ", " << o.GetY() << ", "; }
+	friend ostream& operator<<(ostream&, Color& );
+//	Color operator<< (float const& a);
 
 	static int rToInt(unsigned int color);
 	static int gToInt(unsigned int color);
@@ -54,12 +59,13 @@ public:
 	bool IsSimilar(Color b, float epsilon = 0);
 
 	//const
-	static  Color BLACK;
-	static  Color RED;
-	static  Color GREEN;
-	static  Color BLUE;
-	static  Color LVIOLET;
-	static  Color DVIOLET;
-	static  Color YELLOW;
+	static Color BLACK;
+	static Color WHITE;
+	static Color RED;
+	static Color GREEN;
+	static Color BLUE;
+	static Color LVIOLET;
+	static Color DVIOLET;
+	static Color YELLOW;
 
 };

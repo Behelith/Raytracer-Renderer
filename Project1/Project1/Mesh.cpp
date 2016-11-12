@@ -8,6 +8,7 @@ Mesh::Mesh()
 
 Mesh::Mesh(string filename)
 {
+	m_material = &Material::RED_D;
 	importOBJ(filename);
 }
 

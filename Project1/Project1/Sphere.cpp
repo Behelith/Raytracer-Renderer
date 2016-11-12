@@ -5,12 +5,12 @@
 
 Sphere::Sphere()
 {
-	delete m_color;
+	delete m_material;;
 }
 
 Sphere::Sphere(float3 center, float radius, Color &color) : center(center), radius(radius)
 {
-	m_color = new Color(1.0f, 0.0f, 0.0f);
+	m_material = &Material::RED_D;// new Color(1.0f, 0.0f, 0.0f);
 	setColor(color);
 
 }

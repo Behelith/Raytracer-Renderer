@@ -37,14 +37,12 @@ int main(int argc, char * argv[])
 
 	//for (int i = 0; i < meshes.size(); i++)
 	//	sc.push_back(&meshes[i]);
-	sc.push_back(new Mesh("obj/d1.obj"));
-	sc.push_back(new Mesh("obj/d2.obj"));
+	sc.push_back(new Mesh("obj/s1.obj"));
+	//sc.push_back(new Mesh("obj/d2.obj"));
 
-
-	cout << " models: " << sc.size() << endl;
-
-
-	Camera cam(float3(2.0f, 1.f, -2.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
+	//cout << " models: " << sc.size() << endl;
+	
+	Camera cam(float3(2.0f, 1.f, -6.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
 	//Camera cam	(float3 (0.0f, 0.0f, -2), float3(0,0,0), float3 (0,1,0)); // ortho
 	//while (true)
 	{
@@ -61,7 +59,7 @@ int main(int argc, char * argv[])
 
 	Display display("okno_1", bitmap);
 
-	_getch();
+//	_getch();
 
 	for (auto &p : sc)
 		delete p;

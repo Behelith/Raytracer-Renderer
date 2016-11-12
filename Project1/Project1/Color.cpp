@@ -15,7 +15,8 @@ Color::Color() : m_color(0x000000ff) {}
 /*Color::Color(short r, short g, short b, short a) : r(r), g(g), b(b), a(a) {}
 Color::Color(short r, short g, short b) : r(r), g(g), b(b), a(255) {}*/
 
-Color Color::BLACK = Color(0, 0, 0);
+Color Color::BLACK = Color(0.f, 0.f, 0.f);
+Color Color::WHITE = Color(1.f, 1.f, 1.f);
 Color Color::RED = Color(1.f, 0.f, 0.f);
 Color Color::GREEN = Color(0.f, 1.f, 0.f);
 Color Color::BLUE = Color(0.f, 0.f, 1.f);
@@ -55,6 +56,15 @@ bool Color::isBlack()
 	return (m_r == m_b == m_g == 0) ? true : false;
 }
 
+void Color::cut()
+{
+	m_r = (m_r > 1.f) ? 1.f : m_r;
+	m_g = (m_g > 1.f) ? 1.f : m_g;
+	m_b = (m_b > 1.f) ? 1.f : m_b;
+	m_a = (m_a > 1.f) ? 1.f : m_a;
+
+}
+
 unsigned int Color::toHex()
 {
 	int r = (int)(m_r * 255);
@@ -90,3 +100,5 @@ void Color::operator-= (Color & o) { m_r = m_r - o.getR(); m_g = m_g - o.getG();
 Color Color::operator* (Color & o) { return Color(m_r * o.getR(), m_g * o.getG(), m_b * o.getB(), m_a * o.getA()); }
 Color Color::operator* (float const& o) { return Color(m_r * o, m_g * o, m_b * o, m_a * o); }
 Color Color::operator/ (float const& o) { return Color(m_r / o, m_g / o, m_b / o, m_a / o); }
+
+ostream& operator<<(ostream& str, Color& o) { return str << o.getR() << ", " << o.getG() << ", " << o.getB(); }

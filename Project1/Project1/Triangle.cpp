@@ -93,8 +93,9 @@ float Triangle::Intersect(Ray& ray, float distance)
 	m_w = float3::dot(e2, q)* iDet;
 
 	if (m_w > eps5) return m_w;
-	
+		
 	return -1.f;
+		
 
 	
 	//cout << "m_w: " << m_w << endl;

@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include <Brofiler.h>
+#include "Light.h"
 
 Camera::Camera()
 {
@@ -90,7 +91,9 @@ void Camera::LookAt(float3 target)
 
 Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, float &zDepth, int level)
 {
-	BROFILER_CATEGORY ("sampling", Profiler::Color::Yellow)
+	BROFILER_CATEGORY("sampling", Profiler::Color::Yellow)
+
+		Light light(float3(0, 6, 0), Color::WHITE);
 
 	//	cout << level << endl;
 	Color bg(0.0f, .0f, 0.0f);
@@ -148,24 +151,25 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		for (uint8_t j = 0; j < objects.size(); j++)
 		{
 			float isect = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
+			float3 p;
 
 			if (isect != -1 && isect < lastDistance)
 			{
+				p = r.getOrigin() + r.getDirection() * isect;
 				lastDistance = isect;
 				objectHit = objects[j];
+					
 			}
 		}
 		//jesli znalazl cokolwiek to pobierz kolor obiektu
 		if (lastDistance < INFINITY && objectHit != NULL)
 		{
 			colors[i] += objectHit->getColor();// *(1 - pr);
-			zVerts[i] = lastDistance;
-			hits += 1.f;
+
 		}
 		else
 		{
 			colors[i] += bg;// *(1 - pr);
-			zVerts[i] = 50.f;
 
 		}
 	}
@@ -182,11 +186,8 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		for (int i = 0; i < 4; i++)
 		{
 			suma += colors[i];
-			zSuma += zVerts[i];
 
 		}
-		//if (hits >0
-			zDepth = zSuma / 4.f;// 4.f;
 	//	else zDepth = INFINITY;// 4.f;
 		return suma / 4.0f;
 	}
@@ -209,7 +210,6 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 
 		}
 		// zwroc usredniony kolor
-		zDepth = zSuma / 4.f;
 		//if (zDepth == 0) cout << "\n fsfasf\n\n";
 		return suma / 4.0f;
 
@@ -221,6 +221,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 {
 	BROFILER_CATEGORY( "RenderImage", Profiler::Color::Orchid )
+
 
 	float zMin = 100.f, zMax = 0.f;
 	float zDepth = 0;
@@ -270,6 +271,9 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 			bitmap.DrawPixel(x, y, tmp);
 			if (zDepth < INFINITY) bitmap.m_zbuffer[x + y *bitmap.getWidth()] = zDepth;
 
+
+
+
 /*	
 			float3 pxRay = m_u * pxc + m_v * pyc + m_w * -m_distance;
 
@@ -298,7 +302,7 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 	
 	
 	
-	cout << "zMin: " << zMin << "\tzMax: " << zMax << endl;
+	//cout << "zMin: " << zMin << "\tzMax: " << zMax << endl;
 	
 	
 	

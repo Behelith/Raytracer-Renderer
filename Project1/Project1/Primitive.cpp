@@ -4,6 +4,7 @@
 
 Primitive::Primitive()
 {
+	//	m_material = &Material::DBLUE_D;
 }
 
 
@@ -12,7 +13,13 @@ Primitive::~Primitive()
 //	delete m_color;
 }
 
-Color Primitive::getColor() { return *m_color; }
+Color Primitive::getColor() 
+{
+	return m_material->getColor();
+	//	*m_color; 
+}
+
+Material Primitive::getMaterial() { return *m_material; }
 
 
 float Primitive::Intersect(Ray& ray, float distance)
@@ -22,5 +29,10 @@ float Primitive::Intersect(Ray& ray, float distance)
 
 void Primitive::setColor(Color &color)
 {
-	m_color =&color;
+//	m_color =&color;
+}
+
+void Primitive::setMaterial(Material& material)
+{
+	m_material = &material;
 }

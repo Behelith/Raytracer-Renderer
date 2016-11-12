@@ -2,11 +2,13 @@
 #include "structures.h"
 //#include "Image.h"
 
-
-//#define MISS 0;
-//#define HIT 1;
-//#define INSIDE 2;
-
+struct hitInfo
+{
+	float3 normal;
+	float3 point;
+	Color color;
+	float distance;
+};
 
 inline float uRand() {
 	float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -39,8 +41,8 @@ float2 float2::operator* (float2 & o) { return float2(GetX()*o.GetX(), GetY()*o.
 float2 float2::operator- (float2 & o) { return float2(GetX() - o.GetY(), GetY() - o.GetX()); }
 float2 float2::operator*(const float & o) { return float2(GetX() * o, GetY()*o); }
 
-
 ostream& operator<<(ostream& str, float2& o) { return str << o.GetX() << ", " << o.GetY() << ", "; }
+//ostream& operator<<(ostream& str, Color& o) { return str << o.getR() << ", " << o.getG() << ", " << o.getB(); }
 
 #pragma endregion 
 

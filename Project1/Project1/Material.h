@@ -3,24 +3,24 @@
 
 class Material
 {
-public:
-	Color m_dr;
-	Color m_sr;
-	Color m_st;
-	float ior;
+private:
+	float m_kd; // wspolczynnik diffuse
+	float m_ks; //wspolczynnik specular
+	float m_kg;
+	Color *m_color;
 
-	bool isDiffuse;       // czy materia³ odbija z rozproszeniem
-	bool isSpecular;      // czy materia³ odbija zwierciadlanie
-	bool isTransmittive;  // czy materia³ transmituje
-	bool hasTextures;     // czy materia³ posiada tekstury
-	bool hasDrMap;        // czy materia³ posiada mapê odbicia rozproszonego
-	bool hasNormalMap;
+public:
+
+
+
 
 	Material();
-	Material(Color diffuse, Color specular, Color transmitance, float refraction);
-	Material(Color diffuse, Color specular);
+	Material(Color &albedo, float d, float s);
 	~Material();
+	Color getColor() { return *m_color; }
 
-private:
+	static Material DBLUE_D;
+	static Material RED_D;
+
 
 };
