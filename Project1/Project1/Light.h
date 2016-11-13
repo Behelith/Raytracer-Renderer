@@ -12,6 +12,9 @@ public:
 	Light(float3 position, Color &color);
 	~Light();
 
+	Color getColor() { return *m_color; }
+	float3 getPosition(){ return m_position; }
+
 //	float getG ()
 };
 

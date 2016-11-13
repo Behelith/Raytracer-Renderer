@@ -8,10 +8,13 @@ Sphere::Sphere()
 	delete m_material;;
 }
 
-Sphere::Sphere(float3 center, float radius, Color &color) : center(center), radius(radius)
+
+
+
+Sphere::Sphere(float3 center, float radius, Material& material) : center(center), radius(radius)
 {
-	m_material = &Material::RED_D;// new Color(1.0f, 0.0f, 0.0f);
-	setColor(color);
+	m_material = &material;// new Color(1.0f, 0.0f, 0.0f);
+//	setColor(color);
 
 }
 
@@ -22,7 +25,7 @@ float3 Sphere::getNormal(float3& position) {
 }
 
 
-float Sphere::Intersect(Ray &ray, float distance)
+HitInfo Sphere::Intersect(Ray &ray, float distance)
 {
 	float3
 		v = ray.getOrigin() - getCenter();
@@ -72,15 +75,23 @@ float Sphere::Intersect(Ray &ray, float distance)
 	if (tmp == -1 || tmp <= 0)
 	{
 		//	cout << "brak przeciecia" << endl;
-		return tmp;
+		//return tmp;
+		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), getColor(), -1);
+
 	}
 
 	if (i1 == i2 && distance > 0) { // jesli pierwiastki sa takie same (w momencie gdy delta == 0) to promien jest styczny do sfery
 		float3 p(ray.getOrigin() + ray.getDirection() * tmp);
 		//	cout << "punkt styczny: " << p << endl;
-		return tmp;
+		float3 n = p - center;
+		n.unitise();
+		return HitInfo(n, p, getColor(), tmp);
+
+
+	//	return tmp;
 	}
-	else
+
+else
 	{
 		float3 p(ray.getOrigin() + ray.getDirection() * tmp);
 		float3 p2(ray.getOrigin() + ray.getDirection() * i2);
@@ -89,7 +100,10 @@ float Sphere::Intersect(Ray &ray, float distance)
 		//	cout << "punkt przeciecia w zadanym kierunku: " << p << endl;
 		//	if (i1 > 0 && i2 > i1) cout << "punkt przeciecia w zadanym kierunku: " << p2 << endl;
 
-		return tmp;
+		float3 n = p - center;
+
+		return HitInfo(n, p, getColor(), tmp);
+		//return tmp;
 
 	}
 

@@ -8,7 +8,7 @@ Mesh::Mesh()
 
 Mesh::Mesh(string filename)
 {
-	m_material = &Material::RED_D;
+	m_material = &Material::DBLUE_D;
 	importOBJ(filename);
 }
 
@@ -18,7 +18,7 @@ Mesh::~Mesh()
 	m_vertices.clear();
 }
 
-float Mesh::Intersect(Ray& ray, float distance)
+HitInfo Mesh::Intersect(Ray& ray, float distance)
 {
 	
 
@@ -26,19 +26,23 @@ float Mesh::Intersect(Ray& ray, float distance)
 	//for (Triangle t : m_triangles)
 
 	{
-		float isect = m_triangles[i].Intersect(ray, distance);
-		if (isect > 0)
+		HitInfo hi = 
+		//float isect =
+			m_triangles[i].Intersect(ray, distance);
+		if (hi.getDistance() > 0)
 		{
 	//	setColor( m_triangles[i].getColor());
 			c = i;
-		//	cout << hex << t.getColor().toHex() << endl;
+		//	cout << hex << t.getColor().toHex() << endl;HitInfoz
 			//setColor(m_triangles[i].getColor());
-			return isect;
+			float3 p = ray.getOrigin() + ray.getDirection()*hi.getDistance();
+			return HitInfo(m_triangles[i].getNormal(), p, getColor(), hi.getDistance());
 			break;
 		}
 	}
 
-	return -1;
+	return HitInfo(float3(0,0,0), float3(0,0,0), getColor(), -1);
+
 }
 
 void split(std::string str, std::string splitBy, std::vector<std::string>& tokens)

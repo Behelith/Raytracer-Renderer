@@ -30,19 +30,19 @@ int main(int argc, char * argv[])
 	vector <Primitive*> sc;
 
 
-	//sc.push_back(new Sphere(float3(1.2f, 0, 0.8f), 0.3f, Color::YELLOW));
-	//sc.push_back(new Sphere(float3(-1.2f, 0, 0.0f), 0.9f, Color::RED));
+	sc.push_back(new Sphere(float3(4.2f, 0, 0.0f), 1.f, Material::RED_D));
+	sc.push_back(new Sphere(float3(-4.2f, 0, 0.0f), 1.f, Material::DBLUE_D));
 
 	//Mesh::importOBJ("obj/s2.obj", meshes);
 
 	//for (int i = 0; i < meshes.size(); i++)
 	//	sc.push_back(&meshes[i]);
-	sc.push_back(new Mesh("obj/s1.obj"));
+//	sc.push_back(new Mesh("obj/s2.obj"));
 	//sc.push_back(new Mesh("obj/d2.obj"));
 
 	//cout << " models: " << sc.size() << endl;
 	
-	Camera cam(float3(2.0f, 1.f, -6.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
+	Camera cam(float3(0.0f, 0.f, -15.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
 	//Camera cam	(float3 (0.0f, 0.0f, -2), float3(0,0,0), float3 (0,1,0)); // ortho
 	//while (true)
 	{

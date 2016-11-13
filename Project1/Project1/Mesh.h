@@ -15,7 +15,7 @@ public:
 
 	vector <float3> m_vertices;
 	vector <Triangle> m_triangles;
-	float Intersect(Ray &ray, float distance);
+	HitInfo Intersect(Ray &ray, float distance);
 	
 	//Color getColor()
 	//{

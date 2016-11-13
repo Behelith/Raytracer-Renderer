@@ -51,7 +51,7 @@ Triangle::~Triangle()
 	m_verts.clear();
 }
 
-float Triangle::Intersect(Ray& ray, float distance)
+HitInfo Triangle::Intersect(Ray& ray, float distance)
 {
 	BROFILER_CATEGORY ("intersect", Profiler::Color::Green)
 
@@ -71,7 +71,9 @@ float Triangle::Intersect(Ray& ray, float distance)
 	//culling: jesli to prawdzwe, to trojkat jest tylem; jesli jest blisko zera to nie trafia w trojkat;
 	//cout << det << endl;
 	if (det > -eps5 && det > eps5)
-		return -1;
+
+		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
+//	return -1;
 
 	//if (fabs(det) < eps5) 
 	//	return -1;
@@ -81,20 +83,29 @@ float Triangle::Intersect(Ray& ray, float distance)
 
 	float3 t = ray.getOrigin() - *m_verts[0];
 	m_u = float3::dot(t, p) * iDet;
-	if (m_u < 0 || m_u > 1) return -1.f;
+	if (m_u < 0 || m_u > 1)// return -1.f;
+		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
 	//cout << m_u << endl;
 
 	float3 q = float3::cross(t, e1);
 
 	m_v = float3::dot(ray.getDirection(), q) * iDet;
-	if (m_v < 0 || m_u + m_v > 1) return -1.f;
+	if (m_v < 0 || m_u + m_v > 1)// return -1.f;
+	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
 	//cout << m_v << endl;
 
 	m_w = float3::dot(e2, q)* iDet;
 
-	if (m_w > eps5) return m_w;
-		
-	return -1.f;
+
+
+	if (m_w > eps5) {
+		float3 p = ray.getOrigin() + ray.getDirection()*m_w;
+		return HitInfo(getNormal(), p, Color::RED, m_w);
+	//	return m_w;
+	}
+
+	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
+//	return -1.f;
 		
 
 	

@@ -18,6 +18,8 @@ public:
 
 	float3 getNormal() { return m_normal; }
 
-	float Intersect(Ray &ray, float distance);
+	Color getColor() { return Color::RED; }
+
+	HitInfo Intersect(Ray &ray, float distance);
 };
 

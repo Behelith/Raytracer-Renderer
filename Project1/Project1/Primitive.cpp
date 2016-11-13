@@ -1,7 +1,6 @@
 #include "Primitive.h"
 
 
-
 Primitive::Primitive()
 {
 	//	m_material = &Material::DBLUE_D;
@@ -22,14 +21,14 @@ Color Primitive::getColor()
 Material Primitive::getMaterial() { return *m_material; }
 
 
-float Primitive::Intersect(Ray& ray, float distance)
+HitInfo Primitive::Intersect(Ray& ray, float distance)
 {
-	return -1;
+	return HitInfo (float3 (0,0,0), float3(0,0,0), Color(0,0,0), -1);
 }
-
+ 
 void Primitive::setColor(Color &color)
 {
-//	m_color =&color;
+ //	m_color =&color;
 }
 
 void Primitive::setMaterial(Material& material)

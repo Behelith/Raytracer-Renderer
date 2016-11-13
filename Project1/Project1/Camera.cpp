@@ -5,7 +5,7 @@
 
 Camera::Camera()
 {
-	m_target = float3(0,0,0); 
+	m_target = float3(0, 0, 0);
 	m_up = float3(0, 1, 0);
 	m_fov = 60.f;
 	isOrthogonal = false;
@@ -26,7 +26,7 @@ Camera::Camera()
 	m_u = -m_u;
 }
 
-Camera::Camera(float3 location, float3 direction, float3 up, float fov) 
+Camera::Camera(float3 location, float3 direction, float3 up, float fov)
 {
 	m_target = direction; m_up = up;
 	m_fov = fov;
@@ -42,7 +42,7 @@ Camera::Camera(float3 location, float3 direction, float3 up, float fov)
 	m_u = float3::cross(m_up, m_w); // right vector
 
 	//m_u = float3::cross(m_w, m_up); // right vector
-		m_v = float3::cross(m_w, m_u); //
+	m_v = float3::cross(m_w, m_u); //
 
 	m_distance = 1;
 
@@ -93,7 +93,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 {
 	BROFILER_CATEGORY("sampling", Profiler::Color::Yellow)
 
-		Light light(float3(0, 6, 0), Color::WHITE);
+		Light light(float3(1, 2, 0), Color::YELLOW);
 
 	//	cout << level << endl;
 	Color bg(0.0f, .0f, 0.0f);
@@ -120,7 +120,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 	};
 
 
-	
+
 	//dla kazdego wierzcholka policz i wyslij promien w scene (czyli minimum 4 promienie)
 	for (int i = 0; i < 4; i++)
 	{
@@ -146,25 +146,75 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			m_direction = -m_direction;
 			m_direction.unitise();
 			*/
+
 		}
+		HitInfo hit;// = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
 
 		for (uint8_t j = 0; j < objects.size(); j++)
 		{
-			float isect = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
+			HitInfo	hi = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
+
+				//float isect =
 			float3 p;
 
-			if (isect != -1 && isect < lastDistance)
+			if (hi.getDistance() > 0 && hi.getDistance() < lastDistance)
 			{
-				p = r.getOrigin() + r.getDirection() * isect;
-				lastDistance = isect;
+				//	p = r.getOrigin() + r.getDirection() * hi.getDistance();
+				lastDistance = hi.getDistance();
 				objectHit = objects[j];
-					
+				hit = hi;
 			}
 		}
 		//jesli znalazl cokolwiek to pobierz kolor obiektu
 		if (lastDistance < INFINITY && objectHit != NULL)
 		{
-			colors[i] += objectHit->getColor();// *(1 - pr);
+
+
+
+			//Color pc = hi.getColor() * (Color(0.f, 0.f, 0.f) + objectHit->getMaterial().getColor()*LdotN);
+				//float Id = float3::dot(hi.getNormal(), L)*objectHit->getMaterial().getD()
+
+			HitInfo hl;
+			float3 lrd = hit.getPoint()-light.getPosition() ;
+			lrd.unitise();
+
+			Ray lr(hit.getPoint(), lrd);
+
+			for (uint8_t j = 0; j < objects.size(); j++)
+			{
+				hl = objects[j]->Intersect(lr, 50);//r.intersect(objects[j], 50);
+				if (hl.getDistance() > 0) break;
+				//float isect =
+				float3 p;
+			}
+
+			float visible = (hl.getDistance() > 0) ? 1.f : 0.f;
+
+			Color pc = hit.getColor();
+			//	if (hl.getDistance() > 0)
+			{
+				//pc += Color(0.2f, 0.2f, .2f) * 2;
+
+			}
+			Color ia(0.1f, 0.f, 0.f),
+				id(1.f, 1.f, 1.f),
+				is(0.f, 1.f, 1.f)
+				;
+
+			float3 L = light.getPosition() - r.getDirection();
+			float LdotN = float3::dot(L, hit.getNormal());
+			L.unitise();
+			if (LdotN < 0) LdotN = 0.f;
+
+			float3 R = hit.getNormal() *2 * float3::dot(hit.getNormal(), L) - L;
+			float vr = pow(float3::dot(-r.getDirection(),R),2);
+			pc = ia + id*LdotN*hit.getColor() + is*vr ;
+				pc.cut();
+
+
+
+			colors[i] += pc;///objectHit->getColor();// *(1 - pr);
+		//	colors[i] += pc;// *(1 - pr);
 
 		}
 		else
@@ -180,7 +230,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		if (!colors[i].IsSimilar(colors[i - 1], 0.00005f)) colorDiff = false;
 
 	//maksymalny poziom rekurencji; jesli kolory sie nie roznia, albo osiagnieto max. rek. to zwroc usredniony kolor
-	if (level >=2 || colorDiff)
+	if (level >= 2 || colorDiff)
 	{
 
 		for (int i = 0; i < 4; i++)
@@ -188,7 +238,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			suma += colors[i];
 
 		}
-	//	else zDepth = INFINITY;// 4.f;
+		//	else zDepth = INFINITY;// 4.f;
 		return suma / 4.0f;
 	}
 	// jesli kolory sie roznia:
@@ -206,8 +256,6 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			colors[i] = Sampling(verts[i], dimensions * 0.5, objects, zVerts[i], level + 1);
 			suma += colors[i];
 			zSuma += zVerts[i];
-
-
 		}
 		// zwroc usredniony kolor
 		//if (zDepth == 0) cout << "\n fsfasf\n\n";
@@ -220,17 +268,17 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 
 void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 {
-	BROFILER_CATEGORY( "RenderImage", Profiler::Color::Orchid )
+	BROFILER_CATEGORY("RenderImage", Profiler::Color::Orchid)
 
 
-	float zMin = 100.f, zMax = 0.f;
+		float zMin = 100.f, zMax = 0.f;
 	float zDepth = 0;
 
 	float aspectRatio = float(bitmap.getWidth()) / float(bitmap.getHeight());
 	float pi180 = 3.14159265359f / 180.0f;
 	float tanHFOV;
-	float2 pxDimensions(1.f /  (float)bitmap.getWidth(), 1.f / (float)bitmap.getHeight());
-		
+	float2 pxDimensions(1.f / (float)bitmap.getWidth(), 1.f / (float)bitmap.getHeight());
+
 	if (isOrthogonal)
 	{
 		//orto
@@ -249,18 +297,18 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 		{
 
 			float2 pCenter(x, y);
-		
+
 			if (aspectRatio <= 1.f)
 			{
 				pCenter.SetX((2.f * (x + 0.5f) * pxDimensions.GetX() - 1.f) * tanHFOV);
 				//pCenter.SetY((2.f * (y + 0.5f) * pxDimensions.GetY() - 1.f) / aspectRatio * tanHFOV);
-				pCenter.SetY((1.f - 2.f * (y + 0.5f) * pxDimensions.GetY())   /aspectRatio * tanHFOV);
+				pCenter.SetY((1.f - 2.f * (y + 0.5f) * pxDimensions.GetY()) / aspectRatio * tanHFOV);
 
 			}
 			else
 			{
 				pCenter.SetX((2.f * (x + 0.5f) * pxDimensions.GetX() - 1.f) * tanHFOV * aspectRatio);
-				pCenter.SetY((1.f -2.f * (y + 0.5f) * pxDimensions.GetY() ) *  tanHFOV);
+				pCenter.SetY((1.f - 2.f * (y + 0.5f) * pxDimensions.GetY()) *  tanHFOV);
 			}
 
 			//color z antialiasingiem
@@ -274,42 +322,42 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 
 
 
-/*	
-			float3 pxRay = m_u * pxc + m_v * pyc + m_w * -m_distance;
+			/*
+						float3 pxRay = m_u * pxc + m_v * pyc + m_w * -m_distance;
 
-			pxRay.unitise();
-			Ray r(m_location, pxRay);
-			for (int i = 0; i < 3; i++) {
+						pxRay.unitise();
+						Ray r(m_location, pxRay);
+						for (int i = 0; i < 3; i++) {
 
-				float isect = r.intersect(objects[i], 50);
+							float isect = r.intersect(objects[i], 50);
 
 
-				if (isect != -1 && isect < zBuffer[x + y *bitmap.getWidth()])
-				{
-					zBuffer[x + y *bitmap.getWidth()] = isect;
-					if (isect > zMax) zMax = isect;
-					if (isect < zMin) zMin = isect;
+							if (isect != -1 && isect < zBuffer[x + y *bitmap.getWidth()])
+							{
+								zBuffer[x + y *bitmap.getWidth()] = isect;
+								if (isect > zMax) zMax = isect;
+								if (isect < zMin) zMin = isect;
 
-					pr = 0;
-					Color tmpCol = objects[i].getColor();// *(1 - pr);
-					bitmap.DrawPixel(x, y, tmpCol.toHex());
-				}
-			}*/
+								pr = 0;
+								Color tmpCol = objects[i].getColor();// *(1 - pr);
+								bitmap.DrawPixel(x, y, tmpCol.toHex());
+							}
+						}*/
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	//cout << "zMin: " << zMin << "\tzMax: " << zMax << endl;
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/*
 		float d = zMax - zMin;
 		for (int i = 0; i < bitmap.getHeight() * bitmap.getWidth(); i++)
@@ -318,7 +366,7 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 			{
 				float pr = (bitmap.m_zbuffer[i]-zMin )/ d;
 				//Color col = Color(1.f, 1.f, 1.f) * (1 - pr);
-				Color col = 
+				Color col =
 					Color(bitmap.getComponents()[i])
 				//	Color (255,255,255)
 				* (1 - pr);

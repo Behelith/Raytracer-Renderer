@@ -3,6 +3,7 @@
 #include "Color.h"
 #include "Ray.h"
 #include "Material.h"
+#include "HitInfo.h"
 
 class Primitive
 {
@@ -11,7 +12,7 @@ public:
 	~Primitive();
 	//float3 getCenter() { return center; }
 	virtual Color getColor();
-	virtual float Intersect(Ray &ray, float distance);
+	virtual HitInfo Intersect(Ray &ray, float distance);
 	virtual void setColor(Color &color);
 	virtual void setMaterial(Material &material);
 	virtual Material getMaterial();

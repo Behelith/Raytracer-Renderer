@@ -2,13 +2,6 @@
 #include "structures.h"
 //#include "Image.h"
 
-struct hitInfo
-{
-	float3 normal;
-	float3 point;
-	Color color;
-	float distance;
-};
 
 inline float uRand() {
 	float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
