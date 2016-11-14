@@ -16,6 +16,10 @@ public:
 	float3 getPoint() { return m_point; }
 	float3 getNormal() { return m_normal; }
 	Color getColor() { return m_color; } // ??
+	void setColor(Color color)
+	{
+		m_color = color;
+	}
 
 	~HitInfo();
 };

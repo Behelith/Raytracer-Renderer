@@ -26,6 +26,11 @@ public:
 
 	static Material DBLUE_D;
 	static Material RED_D;
+	static Material ORANGE;
+	static Material YELLOW;
+	static Material GRAY;
+	static Material DGRAY;
+	static Material GREEN;
 
 
 };

@@ -101,6 +101,7 @@ else
 		//	if (i1 > 0 && i2 > i1) cout << "punkt przeciecia w zadanym kierunku: " << p2 << endl;
 
 		float3 n = p - center;
+		n.unitise();
 
 		return HitInfo(n, p, getColor(), tmp);
 		//return tmp;

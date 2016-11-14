@@ -10,7 +10,7 @@ private:
 
 public:
 	Mesh();
-	Mesh(string filename);
+	Mesh(string filename, Material &material);
 	~Mesh();
 
 	vector <float3> m_vertices;

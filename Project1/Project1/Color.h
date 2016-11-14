@@ -61,6 +61,8 @@ public:
 	//const
 	static Color BLACK;
 	static Color WHITE;
+	static Color GRAY;
+	static Color DGRAY;
 	static Color RED;
 	static Color GREEN;
 	static Color BLUE;
@@ -68,4 +70,5 @@ public:
 	static Color DVIOLET;
 	static Color YELLOW;
 
+	static Color ORANGE;
 };

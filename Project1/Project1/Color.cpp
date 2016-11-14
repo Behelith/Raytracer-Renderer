@@ -17,12 +17,15 @@ Color::Color(short r, short g, short b) : r(r), g(g), b(b), a(255) {}*/
 
 Color Color::BLACK = Color(0.f, 0.f, 0.f);
 Color Color::WHITE = Color(1.f, 1.f, 1.f);
+Color Color::GRAY = Color(0.5f, 0.5f, 0.5f);
+Color Color::DGRAY = Color(0.1f, 0.1f, 0.1f);
 Color Color::RED = Color(1.f, 0.f, 0.f);
 Color Color::GREEN = Color(0.f, 1.f, 0.f);
 Color Color::BLUE = Color(0.f, 0.f, 1.f);
 Color Color::DVIOLET = Color(50, 0, 75);
 Color Color::LVIOLET = Color(133, 96, 168);
 Color Color::YELLOW = Color(250, 250, 10);
+Color Color::ORANGE = Color(1.f, 0.5f, 0.f);
 
 /*
 c1(255, 200, 15),

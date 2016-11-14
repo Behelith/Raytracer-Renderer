@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include <Brofiler.h>
-#include "Light.h"
+//#include "Light.h"
 
 Camera::Camera()
 {
@@ -89,14 +89,14 @@ void Camera::LookAt(float3 target)
 
 }
 
-Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, float &zDepth, int level)
+Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, vector<Light*> &lights, float &zDepth, int level)
 {
 	BROFILER_CATEGORY("sampling", Profiler::Color::Yellow)
 
-		Light light(float3(1, 2, 0), Color::YELLOW);
+		//	Light light(float3(1, 2, 0), Color::YELLOW);
 
-	//	cout << level << endl;
-	Color bg(0.0f, .0f, 0.0f);
+		//	cout << level << endl;
+		Color bg(0.0f, .0f, 0.0f);
 	Color suma(0.0f, 0.0f, 0.0f);
 
 	float zVerts[4] = { 0.f,0.f,0.f,0.f };
@@ -125,12 +125,13 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 	for (int i = 0; i < 4; i++)
 	{
 		Primitive *objectHit = NULL; //najblizszy obiekt
+		HitInfo hit(float3(), float3(), Color::RED, INFINITY);// = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
 		float lastDistance = INFINITY; //odleglosc do aktualnego, najblizszego
 		float3 pxRay = m_u * verts[i].GetX() + m_v * verts[i].GetY() + m_w * -m_distance;		//piksel w przestrzeni
 		Ray r;// promien
 
-		//Ray r(m_location, pxRay);
-		//	
+			  //Ray r(m_location, pxRay);
+			  //	
 		if (isOrthogonal) //orto
 		{
 			//	m_direction = m_w;	//perspective
@@ -148,16 +149,14 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			*/
 
 		}
-		HitInfo hit;// = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
 
 		for (uint8_t j = 0; j < objects.size(); j++)
 		{
-			HitInfo	hi = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
-
-				//float isect =
+			HitInfo	hi = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50
+			//float isect =
 			float3 p;
 
-			if (hi.getDistance() > 0 && hi.getDistance() < lastDistance)
+			if (hi.getDistance() > 0 && hi.getDistance() < hit.getDistance())
 			{
 				//	p = r.getOrigin() + r.getDirection() * hi.getDistance();
 				lastDistance = hi.getDistance();
@@ -166,55 +165,57 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			}
 		}
 		//jesli znalazl cokolwiek to pobierz kolor obiektu
-		if (lastDistance < INFINITY && objectHit != NULL)
+		if (hit.getDistance() < INFINITY && objectHit != nullptr)
 		{
-
-
-
-			//Color pc = hi.getColor() * (Color(0.f, 0.f, 0.f) + objectHit->getMaterial().getColor()*LdotN);
-				//float Id = float3::dot(hi.getNormal(), L)*objectHit->getMaterial().getD()
-
 			HitInfo hl;
-			float3 lrd = hit.getPoint()-light.getPosition() ;
-			lrd.unitise();
+			float3 srd = lights[0]->getPosition() - hit.getPoint();
+			srd.unitise(); //shadow ray direction
 
-			Ray lr(hit.getPoint(), lrd);
+			Ray sr(hit.getPoint(), srd);
 
 			for (uint8_t j = 0; j < objects.size(); j++)
 			{
-				hl = objects[j]->Intersect(lr, 50);//r.intersect(objects[j], 50);
-				if (hl.getDistance() > 0) break;
-				//float isect =
-				float3 p;
+				hl = objects[j]->Intersect(sr, 50);//r.intersect(objects[j], 50);
+				if (hl.getDistance() > eps5) break;
+				hl = HitInfo(float3(), float3(), Color::RED, -1);
+				//float3 p;
 			}
 
-			float visible = (hl.getDistance() > 0) ? 1.f : 0.f;
+			//float visible = (hl.getDistance() <= 0) ? 1.f : 0.f;
 
-			Color pc = hit.getColor();
-			//	if (hl.getDistance() > 0)
-			{
-				//pc += Color(0.2f, 0.2f, .2f) * 2;
+			float vi = (hl.getDistance() < 0) ? 1.f : 0.f;
 
-			}
-			Color ia(0.1f, 0.f, 0.f),
+			Color pc = Color::BLACK;
+
+			Color ia(0.1f, 0.05f, 0.0f),
 				id(1.f, 1.f, 1.f),
-				is(0.f, 1.f, 1.f)
+				is(1.f, 1.f, 1.f)
 				;
 
-			float3 L = light.getPosition() - r.getDirection();
-			float LdotN = float3::dot(L, hit.getNormal());
+			float3 L = lights[0]->getPosition() - hit.getPoint();
 			L.unitise();
+			
+			//float LdotN = float3::dot(L, hit.getNormal());
+			float LdotN = float3::dot( hit.getNormal(), L);
+			
 			if (LdotN < 0) LdotN = 0.f;
 
-			float3 R = hit.getNormal() *2 * float3::dot(hit.getNormal(), L) - L;
-			float vr = pow(float3::dot(-r.getDirection(),R),2);
-			pc = ia + id*LdotN*hit.getColor() + is*vr ;
-				pc.cut();
+			float3 H = L - r.getDirection();
+			H.unitise();
 
+		//	float3 R = hit.getNormal() * (2.0* (float3::dot(L, hit.getNormal()))) - L;
 
+			float nh = pow(float3::dot(hit.getNormal(), H), 64);
+
+			pc += ia +
+				hit.getColor() *LdotN*vi  +
+				is*nh*vi;
+			pc.cut();
+
+			//		pc = objectHit->getColor();
 
 			colors[i] += pc;///objectHit->getColor();// *(1 - pr);
-		//	colors[i] += pc;// *(1 - pr);
+							//	colors[i] += pc;// *(1 - pr);
 
 		}
 		else
@@ -253,7 +254,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		//ustal kolor kazdego fragmentu, (myyyk rekurencja xD)
 		for (int i = 0; i < 4; i++)
 		{
-			colors[i] = Sampling(verts[i], dimensions * 0.5, objects, zVerts[i], level + 1);
+			colors[i] = Sampling(verts[i], dimensions * 0.5, objects, lights, zVerts[i], level + 1);
 			suma += colors[i];
 			zSuma += zVerts[i];
 		}
@@ -266,7 +267,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 }
 
 
-void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
+void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects, vector<Light*> &lights)
 {
 	BROFILER_CATEGORY("RenderImage", Profiler::Color::Orchid)
 
@@ -312,7 +313,7 @@ void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects)
 			}
 
 			//color z antialiasingiem
-			unsigned int tmp = Sampling(pCenter, pxDimensions*0.5f, objects, zDepth).toHex();
+			unsigned int tmp = Sampling(pCenter, pxDimensions*0.5f, objects, lights, zDepth).toHex();
 
 			if (zDepth > zMax) zMax = zDepth;
 			if (zDepth < zMin && zDepth) zMin = zDepth;

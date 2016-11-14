@@ -4,6 +4,7 @@
 #include "Primitive.h"
 //#include "Ray.h"
 #include "Sphere.h"
+#include "Light.h"
 
 class Camera 
 {
@@ -32,7 +33,7 @@ public:
 	~Camera();
 
 	void LookAt(float3 target);
-	Color Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, float &zDepth, int level = 0);
-	void RenderImage (RenderContext &bitmap, vector<Primitive*> &objects);
+	Color Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, vector<Light*> &lights, float &zDepth, int level = 0);
+	void RenderImage (RenderContext &bitmap, vector<Primitive*> &objectss, vector<Light*> &lights);
 };
 

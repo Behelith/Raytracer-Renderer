@@ -7,6 +7,8 @@ class Triangle : public Primitive
 private: 
 	float3 m_normal;
 	float m_u, m_v, m_w;
+	Color *m_color;
+
 
 public:
 	//float3 m_verts[3];
@@ -18,7 +20,8 @@ public:
 
 	float3 getNormal() { return m_normal; }
 
-	Color getColor() { return Color::RED; }
+	void setColor(Color &color);
+	Color getColor() { return *m_color; }
 
 	HitInfo Intersect(Ray &ray, float distance);
 };

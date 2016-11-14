@@ -15,33 +15,9 @@ Triangle::Triangle(float3* a, float3 *b, float3* c, Color &color)// : m_a(a), m_
 	m_verts.push_back(b);
 	m_verts.push_back(c);
 
-	/*	m_verts[0] = a;
-	m_verts[1] = b;
-	m_verts[2] = c;*/
-	/*if (a.y < b.y)
-	{
-		float3 tmp = b;
-		b = a;
-		a = tmp;
-
-	}
-	if (b.y < c.y)
-	{
-		float3 tmp = c;
-		c = b;
-		b = tmp;
-	}
-	if (a.y < b.y)
-	{
-		float3 tmp = b;
-		b = a;
-		a = tmp;
-	}*/
-
-
-
 //	m_normal = float3::cross((c - a), (b - a));
 	m_normal = float3::cross( (*b - *a), (*c - *a));
+	m_normal.unitise();
 
 	setColor(color);
 }
@@ -51,12 +27,17 @@ Triangle::~Triangle()
 	m_verts.clear();
 }
 
+void Triangle::setColor(Color &color)
+{
+	m_color =&color;
+}
+
 HitInfo Triangle::Intersect(Ray& ray, float distance)
 {
 	BROFILER_CATEGORY ("intersect", Profiler::Color::Green)
 
-	//edge 1
-	float3 e1 = *m_verts[1] - *m_verts[0];
+
+		float3 e1 = *m_verts[1] - *m_verts[0];
 	float3 e2 = *m_verts[2] - *m_verts[0];
 
 	// z rozwiazania macierzy
@@ -68,17 +49,17 @@ HitInfo Triangle::Intersect(Ray& ray, float distance)
 	float det = float3::dot(e1, p); // wyznacznik macierzy
 
 
-	//culling: jesli to prawdzwe, to trojkat jest tylem; jesli jest blisko zera to nie trafia w trojkat;
-	//cout << det << endl;
-	if (det > -eps5 && det > eps5)
-
+									//culling: jesli to prawdzwe, to trojkat jest tylem; jesli jest blisko zera to nie trafia w trojkat;
+									//cout << det << endl;
+	if (-eps5 < det < eps5)
+	//if (det > -eps5 && det < eps5)
 		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
-//	return -1;
+	//	return -1;
 
 	//if (fabs(det) < eps5) 
 	//	return -1;
 
-	
+
 	float iDet = 1.f / det;
 
 	float3 t = ray.getOrigin() - *m_verts[0];
@@ -91,26 +72,28 @@ HitInfo Triangle::Intersect(Ray& ray, float distance)
 
 	m_v = float3::dot(ray.getDirection(), q) * iDet;
 	if (m_v < 0 || m_u + m_v > 1)// return -1.f;
-	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
+
+
+		return HitInfo(float3(), float3(), Color::RED, -1);
+
 	//cout << m_v << endl;
 
 	m_w = float3::dot(e2, q)* iDet;
 
 
 
-	if (m_w > eps5) {
-		float3 p = ray.getOrigin() + ray.getDirection()*m_w;
-		return HitInfo(getNormal(), p, Color::RED, m_w);
-	//	return m_w;
+	if (m_w > eps5)
+	{
+		float3 point = ray.getOrigin() + ray.getDirection()*m_w;
+
+		//normalna sie liczy tak:
+		//float3 n = float3::cross(e1, e2);
+		//n.unitise();
+
+		//return HitInfo(getNormal(), p, Color::WHITE, m_w);
+		return HitInfo(getNormal(), point, getColor(), m_w);
+		//	return m_w;
 	}
 
 	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
-//	return -1.f;
-		
-
-	
-	//cout << "m_w: " << m_w << endl;
-
-
-	//return (p - ray.getOrigin()).length();
 }
