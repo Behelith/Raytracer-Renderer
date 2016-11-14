@@ -119,7 +119,11 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		Color(0,0,0)
 	};
 
-
+			Color ia(0.1f, 0.05f, 0.0f),
+			//	ia(1.f, 1.f, 1.f),
+				id(1.f, 1.f, 1.f),
+				is(1.f, 1.f, 1.f)
+				;
 
 	//dla kazdego wierzcholka policz i wyslij promien w scene (czyli minimum 4 promienie)
 	for (int i = 0; i < 4; i++)
@@ -167,55 +171,90 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		//jesli znalazl cokolwiek to pobierz kolor obiektu
 		if (hit.getDistance() < INFINITY && objectHit != nullptr)
 		{
-			HitInfo hl;
-			float3 srd = lights[0]->getPosition() - hit.getPoint();
-			srd.unitise(); //shadow ray direction
+		//	Color pc = Color::BLACK;
 
-			Ray sr(hit.getPoint(), srd);
 
-			for (uint8_t j = 0; j < objects.size(); j++)
-			{
-				hl = objects[j]->Intersect(sr, 50);//r.intersect(objects[j], 50);
-				if (hl.getDistance() > eps5) break;
-				hl = HitInfo(float3(), float3(), Color::RED, -1);
-				//float3 p;
+
+			Color ambient = ia*objectHit->getMaterial().getA();	// ambient do phonga
+			float brightness = 0;
+
+			colors[i] += ambient;
+
+			Color diffuseSum = Color::BLACK;
+			Color specularSum = Color::BLACK;
+
+
+			//swiatla~!!
+			for (uint8_t k = 0; k < lights.size(); k++) {
+				Color diffuse = Color::BLACK;
+				Color specular = Color::BLACK;
+
+				if (lights[k]->getLightType() == 1) {																// uwaga, wartosci wpisane na sztywno!
+					float d = float3::distance(lights[k]->getPosition(), hit.getPoint());
+					//brightness = 1 / (0.02f + 0.05f * d + 0.05f * d * d);
+					brightness = 1 / (lights[k]->getConstA() + lights[k]->getLinearA() * d + lights[k]->getQuadA() * d * d);
+					//brightness = 1;
+				}
+
+				else brightness = 1;
+
+
+				//shadow ray
+				HitInfo hl;
+
+
+				float3 srd = lights[k]->getPosition() - hit.getPoint(); // czemu nie odwrotnie
+				srd.unitise(); //shadow ray direction
+
+				Ray sr(hit.getPoint(), srd);
+
+				for (uint8_t j = 0; j < objects.size(); j++)
+				{
+					hl = objects[j]->Intersect(sr, 50);//r.intersect(objects[j], 50);
+					if (hl.getDistance() > eps5) break;
+					hl = HitInfo(float3(), float3(), Color::RED, -1);
+					//float3 p;
+				}
+				float vi =(hl.getDistance() < 0) ? 1.f : 0.f; // visibilisit
+															   //float visible = (hl.getDistance() <= 0) ? 1.f : 0.f;
+
+				 //shadow ray
+
+
+
+				float3 L = lights[k]->getPosition() - hit.getPoint();
+				L.unitise();
+
+				//float LdotN = float3::dot(L, hit.getNormal());
+				float LdotN = float3::dot(hit.getNormal(), L);
+
+				if (LdotN < 0) LdotN = 0.f;
+
+				float3 H = L - r.getDirection();
+				H.unitise();
+
+				//	float3 R = hit.getNormal() * (2.0* (float3::dot(L, hit.getNormal()))) - L;
+
+			//	float nh = pow(float3::dot(hit.getNormal(), H), 64);
+				float nh = pow(float3::dot(hit.getNormal(), H), objectHit->getMaterial().getC());		// dla wspolczynnika rozblysku, potega 2
+
+				diffuse = id*objectHit->getColor()*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
+				specular = is*nh*lights[k]->getColor()*vi;
+				diffuseSum += diffuse*brightness*vi;
+				specularSum += specular*brightness*vi;
+
+				//pc += ia +
+				//	hit.getColor() *LdotN*vi +
+				//	is*nh*vi;
+				//pc.cut();
+
+				//		pc = objectHit->getColor();
+
 			}
-
-			//float visible = (hl.getDistance() <= 0) ? 1.f : 0.f;
-
-			float vi = (hl.getDistance() < 0) ? 1.f : 0.f;
-
-			Color pc = Color::BLACK;
-
-			Color ia(0.1f, 0.05f, 0.0f),
-				id(1.f, 1.f, 1.f),
-				is(1.f, 1.f, 1.f)
-				;
-
-			float3 L = lights[0]->getPosition() - hit.getPoint();
-			L.unitise();
-			
-			//float LdotN = float3::dot(L, hit.getNormal());
-			float LdotN = float3::dot( hit.getNormal(), L);
-			
-			if (LdotN < 0) LdotN = 0.f;
-
-			float3 H = L - r.getDirection();
-			H.unitise();
-
-		//	float3 R = hit.getNormal() * (2.0* (float3::dot(L, hit.getNormal()))) - L;
-
-			float nh = pow(float3::dot(hit.getNormal(), H), 64);
-
-			pc += ia +
-				hit.getColor() *LdotN*vi  +
-				is*nh*vi;
-			pc.cut();
-
-			//		pc = objectHit->getColor();
-
-			colors[i] += pc;///objectHit->getColor();// *(1 - pr);
-							//	colors[i] += pc;// *(1 - pr);
+			colors[i] += diffuseSum*objectHit->getMaterial().getD() + specularSum*objectHit->getMaterial().getS();
+			colors[i].cut();
+			//	colors[i] += pc;///objectHit->getColor();// *(1 - pr);
+								//	colors[i] += pc;// *(1 - pr);
 
 		}
 		else
