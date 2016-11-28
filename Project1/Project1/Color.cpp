@@ -56,7 +56,7 @@ float Color::getA() { return m_a; }
 
 bool Color::isBlack()
 {
-	return (m_r == m_b == m_g == 0) ? true : false;
+	return (m_r == m_b == m_g == 0.f) ? true : false;
 }
 
 void Color::cut()

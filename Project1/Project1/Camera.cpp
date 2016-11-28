@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "Sphere.h"
-#include <Brofiler.h>
+//#include <Brofiler.h>
 //#include "Light.h"
 
 Camera::Camera()
@@ -91,7 +91,7 @@ void Camera::LookAt(float3 target)
 
 Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, vector<Light*> &lights, float &zDepth, int level)
 {
-	BROFILER_CATEGORY("sampling", Profiler::Color::Yellow)
+	//BROFILER_CATEGORY("sampling", Profiler::Color::Yellow)
 
 		//	Light light(float3(1, 2, 0), Color::YELLOW);
 
@@ -308,7 +308,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 
 void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects, vector<Light*> &lights)
 {
-	BROFILER_CATEGORY("RenderImage", Profiler::Color::Orchid)
+	//BROFILER_CATEGORY("RenderImage", Profiler::Color::Orchid)
 
 
 		float zMin = 100.f, zMax = 0.f;

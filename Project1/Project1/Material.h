@@ -24,6 +24,7 @@ public:
 	//Color getColor() { return *m_color; }
 
 	static Material DBLUE_D;
+	static Material WHITE_S;
 	static Material RED_D;
 	static Material ORANGE;
 	static Material ORANGE_S;
