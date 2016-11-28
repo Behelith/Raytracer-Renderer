@@ -41,12 +41,17 @@ Display::Display(char * title, RenderContext &displayImage) : windowTitle(title)
 			if (e.key.keysym.sym == SDLK_d)
 			{
 
-			//	displayImage.Clear(0xcc0000);
+				//FreeImage_Save()
 			}
 
 			else if (e.key.keysym.sym == SDLK_p)
-				displayImage.SaveAsTGA("tst4.tga");
-			else if (e.key.keysym.sym == SDLK_q)
+			{
+				
+
+				
+				//displayImage.SaveAsTGA("tst4.tga");
+			}
+				else if (e.key.keysym.sym == SDLK_q)
 			{
 				if (FOV < 179) FOV += 0.5f;
 				cout << "FOV: \t\t" << FOV << endl;

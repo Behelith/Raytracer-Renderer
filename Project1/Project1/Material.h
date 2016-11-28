@@ -1,5 +1,6 @@
 #pragma once
 #include "Color.h"
+#include "Texture.h"
 
 class Material
 {
@@ -9,10 +10,13 @@ private:
 	float m_kc;
 	float m_ka;
 	Color m_color;
+	Texture m_texture; // textura;
+	bool isTextured = false;
 
 public:
 	Material();
 	Material(Color albedo, float d, float s);
+	Material(const char * filename, float d, float s);
 	Material(Color albedo, float d, float s, float a, unsigned int c);
 	~Material();
 	Color getColor() { return m_color; }
@@ -21,9 +25,12 @@ public:
 	float getS() { return m_ks; }
 	float getC() { return m_kc; }
 	float getA() { return m_ka; }
+
+	bool getIsTextured() { return isTextured; }
 	//Color getColor() { return *m_color; }
 
 	static Material DBLUE_D;
+	static Material TEX_1;
 	static Material WHITE_S;
 	static Material RED_D;
 	static Material ORANGE;

@@ -14,6 +14,7 @@ void Bitmap::Clear(unsigned int color)
 	fill(m_components, m_components + (m_width * m_height), color);
 }
 
+
 void Bitmap::DrawPixel(int x, int y, unsigned int color)
 {
 	// (nr wiersza )+ nr kolumny * szerokosc obrazu
@@ -25,6 +26,13 @@ unsigned int * Bitmap::getComponents()
 	return m_components;
 }
 
+void Bitmap::draw(Texture texture)
+{
+	for (int i = 0; i < texture.getWidth()*getHeight(); i++)
+	{
+		m_components[i] = texture.getComponents()[i];
+	}
+}
 
 void Bitmap::SaveAsTGA(string filename)
 {
@@ -84,6 +92,10 @@ void Bitmap::SaveAsTGA(string filename)
 
 }
 
+unsigned Bitmap::getColorAt(int x, int y)
+{
+	return m_components[x + y *m_width];
+}
 
 int Bitmap::getHeight() { return m_height; }
 

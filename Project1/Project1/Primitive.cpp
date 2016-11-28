@@ -14,9 +14,16 @@ Primitive::~Primitive()
 
 Color Primitive::getColor() 
 {
+
+	if (m_material->getIsTextured())
+	{
+		return m_material->getColor();
+	}
+	else
 	return m_material->getColor();
 	//	*m_color; 
 }
+
 
 Material Primitive::getMaterial() { return *m_material; }
 

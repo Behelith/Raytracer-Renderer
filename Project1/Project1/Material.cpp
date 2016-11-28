@@ -1,8 +1,10 @@
 #include "Material.h"
+#include <SDL.h>
 
 Material::Material()
 {
-	m_color = Color::RED;
+	//	m_texture = nullptr;
+		m_color = Color::RED;
 	m_kd = 0.5f;
 	m_ks = 0.5f;
 }
@@ -13,6 +15,7 @@ Material::~Material()
 
 Material::Material(Color albedo, float d, float s)
 {
+//	m_texture = nullptr;
 	m_color = albedo;
 	m_kd = d;
 	m_ks = s;
@@ -20,9 +23,19 @@ Material::Material(Color albedo, float d, float s)
 	m_kc = 8;
 }
 
+Material::Material(const char * filename, float d, float s)
+{
+	m_texture = Texture(filename);
+	isTextured = true;
+	m_kd = d;
+	m_ks = s;
+	m_ka = 0.3f;
+	m_kc = 8;
+}
 
 Material::Material(Color albedo, float d, float s, float a, unsigned int c)
 {
+	//m_texture = nullptr;
 	m_color = albedo;
 	m_kd = d;
 	m_ks = s;
@@ -34,6 +47,7 @@ Material::Material(Color albedo, float d, float s, float a, unsigned int c)
 
 Material Material::DBLUE_D = Material(Color::BLUE, 0.8f, 0.1f);
 Material Material::RED_D = Material(Color::RED, 0.8f, 0.1f, 0.08f, 32);
+//Material Material::TEX_1 = Material("render.png", 0.8f, 0.1f);
 Material Material::ORANGE = Material(Color::ORANGE, 0.8f, 0.1f);
 Material Material::YELLOW = Material(Color::YELLOW, 0.8f, 0.1f);
 Material Material::YELLOW_D = Material(Color::YELLOW, 0.5f, 0.8f, 0.08f, 32);

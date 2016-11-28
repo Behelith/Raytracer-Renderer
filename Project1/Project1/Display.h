@@ -3,6 +3,8 @@
 #include <SDL.h>
 #include "structures.h"
 #include "Stars3D.h"
+#include "FreeImage.h"
+
 
 
 class Display

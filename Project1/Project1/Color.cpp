@@ -85,15 +85,15 @@ int Color::aToInt(unsigned int color) { return (color)& 0xff; }
 
 bool Color::IsSimilar(Color b, float epsilon)
 {
-	//*
+	//
 	if (
 		std::abs(getR() - b.getR()) >= epsilon ||
 		std::abs(getG() - b.getG()) >= epsilon ||
 		std::abs(getB() - b.getB()) >= epsilon
 		)
-
 		return false;
-		else return true;
+
+	return true;
 }
 
 Color Color::operator+ (Color & o) { return Color(m_r + o.getR(), m_g + o.getG(), m_b + o.getB(), m_a + o.getA()); }
