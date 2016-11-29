@@ -56,12 +56,13 @@ int main(int argc, char * argv[])
 	//lights.push_back(new PointLight(float3(0.f, 1.5f, 0.3f), Color::GREEN, 0.02f, 0.05f, 0.05f));
 	//lights.push_back(new PointLight(float3(2.f, 1.5f, 0.3f), Color::BLUE, 0.02f, 0.05f, 0.05f));
 
-	//sc.push_back(new Sphere(float3(-0.6f, 0.4f, 0.f), 0.3f, Material::GREEN));
-	sc.push_back(new Sphere(float3(0.f, 0.4f, 0.f), 0.3f, Material::DBLUE_D));
+	//sc.push_back(new Sphere(float3(-0.6f, 0.4f, 0.f), 0.3f, Material::GRAY));
+	sc.push_back(new Sphere(float3(0.f, 0.4f, 0.f), 0.3f, Material::GRAY));
 	//sc.push_back(new Sphere(float3(0.6f, 0.4f, 0.f), 0.3f, Material::RED_D));
 	//sc.push_back(new Mesh("obj/st.obj", Material::GRAY));
-	sc.push_back(new Mesh("obj/p2.obj", Material::WHITE_S));
+	sc.push_back(new Mesh("obj/p2.obj", Material::GRAY));
 	lights.push_back(new PointLight(float3(-4.f, 2.5f, 1.f), Color::WHITE, 0.02f, 0.05f, 0.05f));
+	lights.push_back(new PointLight(float3(5.f, 2.5f, -1.f), Color::WHITE, 0.02f, 0.05f, 0.05f));
 
 
 	/*
@@ -81,13 +82,18 @@ int main(int argc, char * argv[])
 	*/
 
 	//cout << " models: " << sc.size() << endl;
+	Texture t("az.png");
+	Texture t2("render2.png");
 
+	Material::GRAY.setTexture(t);
+	RenderContext bitmap(t2.getWidth(), t2.getHeight());
+	//bitmap.draw(Material::GRAY.getTexture());
 	//while (true)
 	{
 //		BROFILER_FRAME("rendering")
 			cout << "start.." << endl;
 
-	//	cam.RenderImage(bitmap, sc, lights);
+		cam.RenderImage(bitmap, sc, lights);
 		cout << ".. done " << endl;
 
 	}
@@ -117,9 +123,7 @@ int main(int argc, char * argv[])
 	//load img
 	//Material mt ("render.png", 0.8f, 0.1f);
 	
-	Texture t("render.png");
-	RenderContext bitmap(t.getWidth(), t.getHeight());
-	bitmap.draw(t);
+
 
 	Display display("okno_1", bitmap);
 

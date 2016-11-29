@@ -9,7 +9,7 @@ Triangle::Triangle() //: m_verts[0](float3(0,0,0)), m_b(float3(0, 0, 0)), m_c(fl
 	//m_verts[2] = float3(0, 0, 0); //v2
 }
 
-Triangle::Triangle(float3* a, float3 *b, float3* c, Color &color)// : m_a(a), m_b(b), m_c(c)
+Triangle::Triangle(float3* a, float3 *b, float3* c, Material &material)// : m_a(a), m_b(b), m_c(c)
 {
 	m_verts.push_back(a);
 	m_verts.push_back(b);
@@ -19,7 +19,7 @@ Triangle::Triangle(float3* a, float3 *b, float3* c, Color &color)// : m_a(a), m_
 	m_normal = float3::cross( (*b - *a), (*c - *a));
 	m_normal.unitise();
 
-	setColor(color);
+	setMaterial(material);
 }
 
 Triangle::~Triangle()
@@ -29,7 +29,7 @@ Triangle::~Triangle()
 
 void Triangle::setColor(Color &color)
 {
-	m_color =&color;
+//	m_color =&color;
 }
 
 HitInfo Triangle::Intersect(Ray& ray, float distance)
@@ -91,7 +91,7 @@ HitInfo Triangle::Intersect(Ray& ray, float distance)
 		//n.unitise();
 
 		//return HitInfo(getNormal(), p, Color::WHITE, m_w);
-		return HitInfo(getNormal(), point, getColor(), m_w);
+		return HitInfo(getNormal(), point, getColor(point), m_w);
 		//	return m_w;
 	}
 

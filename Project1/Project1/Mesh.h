@@ -17,11 +17,11 @@ public:
 	vector <Triangle> m_triangles;
 	HitInfo Intersect(Ray &ray, float distance);
 	
-	//Color getColor()
-	//{
-	//	//return *m_color;
-	//	return  m_triangles[c].getColor();
-	//}
+	Color getColor(float3 point)
+	{
+		//return *m_color;
+		return  m_triangles[c].getColor(point);
+	}
 
 
 	bool static importOBJ(string filename, vector<Mesh> &meshes);

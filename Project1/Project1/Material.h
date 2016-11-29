@@ -27,6 +27,8 @@ public:
 	float getA() { return m_ka; }
 
 	bool getIsTextured() { return isTextured; }
+	Texture getTexture() { return m_texture; }
+	void setTexture(Texture texture) { m_texture = texture; isTextured = true; }
 	//Color getColor() { return *m_color; }
 
 	static Material DBLUE_D;

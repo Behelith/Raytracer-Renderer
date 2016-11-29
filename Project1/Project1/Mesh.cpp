@@ -41,7 +41,7 @@ HitInfo Mesh::Intersect(Ray& ray, float distance)
 
 	if (objectHit.getDistance() < INFINITY)
 	{
-		objectHit.setColor(getColor());
+		objectHit.setColor(getColor(float3()));
 		return objectHit;
 	}
 	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::WHITE, -1);
@@ -128,17 +128,17 @@ bool Mesh::importOBJ(string filename)
 				switch (i)
 				{
 				case 0:
-					m_triangles.push_back(Triangle(a, b, c, Color::LVIOLET));
+					m_triangles.push_back(Triangle(a, b, c, *m_material));
 					break;
 				case 1:
-					m_triangles.push_back(Triangle(a, b, c, Color::BLUE));
+					m_triangles.push_back(Triangle(a, b, c, *m_material));
 					break;
 
 				case 2:
-					m_triangles.push_back(Triangle(a, b, c, Color::YELLOW));
+					m_triangles.push_back(Triangle(a, b, c, *m_material));
 					break;
 				default:
-					m_triangles.push_back(Triangle(a, b, c, Color::RED));
+					m_triangles.push_back(Triangle(a, b, c, *m_material));
 					break;
 				}
 			}
@@ -203,8 +203,8 @@ bool Mesh::importOBJ(string filename, vector<Mesh> &meshes)
 					c = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
 					tmp2.clear();
 
-					if (i == 1) meshes[index].getTriangles().push_back(Triangle(a, b, c, Color::DVIOLET));
-					else meshes[index].getTriangles().push_back(Triangle(a, b, c, Color::LVIOLET));
+					if (i == 1) meshes[index].getTriangles().push_back(Triangle(a, b, c, Material::GREEN));
+					else meshes[index].getTriangles().push_back(Triangle(a, b, c, Material::DBLUE_D));
 					//	cout << "tx " << endl;
 				}
 

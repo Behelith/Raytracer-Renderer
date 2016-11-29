@@ -11,7 +11,7 @@ public:
 	Primitive();
 	~Primitive();
 	//float3 getCenter() { return center; }
-	virtual Color getColor();
+	virtual Color getColor(float3 point);
 	virtual HitInfo Intersect(Ray &ray, float distance);
 	virtual void setColor(Color &color);
 	virtual void setMaterial(Material &material);

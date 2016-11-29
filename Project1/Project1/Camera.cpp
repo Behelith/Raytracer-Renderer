@@ -238,7 +238,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			//	float nh = pow(float3::dot(hit.getNormal(), H), 64);
 				float nh = pow(float3::dot(hit.getNormal(), H), objectHit->getMaterial().getC());		// dla wspolczynnika rozblysku, potega 2
 
-				diffuse = id*objectHit->getColor()*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
+				diffuse = id*objectHit->getColor(hit.getPoint())*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
 				specular = is*nh*lights[k]->getColor()*vi;
 				diffuseSum += diffuse*brightness*vi;
 				specularSum += specular*brightness*vi;

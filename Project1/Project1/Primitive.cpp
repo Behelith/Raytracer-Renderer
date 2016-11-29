@@ -12,14 +12,8 @@ Primitive::~Primitive()
 //	delete m_color;
 }
 
-Color Primitive::getColor() 
+Color Primitive::getColor(float3 point)
 {
-
-	if (m_material->getIsTextured())
-	{
-		return m_material->getColor();
-	}
-	else
 	return m_material->getColor();
 	//	*m_color; 
 }

@@ -40,7 +40,30 @@ Display::Display(char * title, RenderContext &displayImage) : windowTitle(title)
 				exit = true;
 			if (e.key.keysym.sym == SDLK_d)
 			{
+				FreeImage_Initialise();
+				//int tw = w, th = h;
+				FIBITMAP *bm = FreeImage_Allocate(displayImage.getWidth(), displayImage.getHeight(), 24, 0xff0000, 0x00ff00, 0x0000ff);
+				RGBQUAD color;
 
+				for (int j = 0; j < displayImage.getHeight(); j++)
+				{
+					for (int i = 0; i < displayImage.getWidth(); i++)
+					{
+						unsigned int tmpColor = displayImage.getColorAt(i, displayImage.getHeight() - j);
+						color.rgbRed = (double)Color::rToInt(tmpColor);
+						color.rgbGreen = (double)Color::gToInt(tmpColor);
+						color.rgbBlue = (double)Color::bToInt(tmpColor);
+						//color.rgbRed = 0.0;
+						//color.rgbGreen = 0.0;
+						//color.rgbBlue = 255.0;
+
+						FreeImage_SetPixelColor(bm, i, j, &color);
+					}
+				}
+				if (FreeImage_Save(FIF_PNG, bm, "render1.png", 0)) { cout << " bitmap successfully saved! " << endl; }
+
+
+				FreeImage_DeInitialise();
 				//FreeImage_Save()
 			}
 

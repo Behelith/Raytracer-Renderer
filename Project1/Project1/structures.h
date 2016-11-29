@@ -118,6 +118,21 @@ public:
 
 	float length();
 
+	static float length (float3 a, float3 b)
+	{
+		float3 t = a - b;
+		return sqrt(t.x*t.x + t.y*t.y + t.z*t.z);
+
+	}
+
+	 float area(float3 v1, float3 v2, float3 v3) {
+		float a = length(v2 , v1);
+		float b = length(v3 , v1);
+		float c = length(v3 , v2);
+		float p = (a + b + c) / 2.0f;
+		return sqrt(p*(p - a)*(p - b)*(p - c));
+	}
+
 	friend	ostream& operator<< (ostream&, float3&);
 	float3 operator+ (float3 const& o);
 	float3 operator- (float3 const& o);		
