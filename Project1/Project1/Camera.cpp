@@ -96,7 +96,6 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		//	Light light(float3(1, 2, 0), Color::YELLOW);
 
 		//	cout << level << endl;
-		Color bg(0.0f, .0f, 0.0f);
 	Color suma(0.0f, 0.0f, 0.0f);
 
 	float zVerts[4] = { 0.f,0.f,0.f,0.f };
@@ -119,149 +118,21 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 		Color(0,0,0)
 	};
 
-			Color ia(0.1f, 0.05f, 0.0f),
-			//	ia(1.f, 1.f, 1.f),
-				id(1.f, 1.f, 1.f),
-				is(1.f, 1.f, 1.f)
-				;
 
 	//dla kazdego wierzcholka policz i wyslij promien w scene (czyli minimum 4 promienie)
 	for (int i = 0; i < 4; i++)
 	{
-		Primitive *objectHit = NULL; //najblizszy obiekt
-		HitInfo hit(float3(), float3(), Color::RED, INFINITY);// = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
-		float lastDistance = INFINITY; //odleglosc do aktualnego, najblizszego
+
 		float3 pxRay = m_u * verts[i].GetX() + m_v * verts[i].GetY() + m_w * -m_distance;		//piksel w przestrzeni
 		Ray r;// promien
-
-			  //Ray r(m_location, pxRay);
-			  //	
 		if (isOrthogonal) //orto
-		{
-			//	m_direction = m_w;	//perspective
 			r = Ray(pxRay, m_direction);
-		}
 		else
 		{
 			pxRay.unitise();
 			r = Ray(m_location, pxRay);
-
-			/* TO JEST MAGIA xD... jak wysylam promien z piksela to wychodzi to wieeeeeeeeelkie;
-			m_direction = pxRay - m_locat ion;
-			m_direction = -m_direction;
-			m_direction.unitise();
-			*/
-
 		}
-
-		for (uint8_t j = 0; j < objects.size(); j++)
-		{
-			HitInfo	hi = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50
-			//float isect =
-			float3 p;
-
-			if (hi.getDistance() > 0 && hi.getDistance() < hit.getDistance())
-			{
-				//	p = r.getOrigin() + r.getDirection() * hi.getDistance();
-				lastDistance = hi.getDistance();
-				objectHit = objects[j];
-				hit = hi;
-			}
-		}
-		//jesli znalazl cokolwiek to pobierz kolor obiektu
-		if (hit.getDistance() < INFINITY && objectHit != nullptr)
-		{
-		//	Color pc = Color::BLACK;
-
-
-
-			Color ambient = ia*objectHit->getMaterial().getA();	// ambient do phonga
-			float brightness = 0;
-
-			colors[i] += ambient;
-
-			Color diffuseSum = Color::BLACK;
-			Color specularSum = Color::BLACK;
-
-
-			//swiatla~!!
-			for (uint8_t k = 0; k < lights.size(); k++) {
-				Color diffuse = Color::BLACK;
-				Color specular = Color::BLACK;
-
-				if (lights[k]->getLightType() == 1) {																// uwaga, wartosci wpisane na sztywno!
-					float d = float3::distance(lights[k]->getPosition(), hit.getPoint());
-					//brightness = 1 / (0.02f + 0.05f * d + 0.05f * d * d);
-					brightness = 1 / (lights[k]->getConstA() + lights[k]->getLinearA() * d + lights[k]->getQuadA() * d * d);
-					//brightness = 1;
-				}
-
-				else brightness = 1;
-
-
-				//shadow ray
-				HitInfo hl;
-
-
-				float3 srd = lights[k]->getPosition() - hit.getPoint(); // czemu nie odwrotnie
-				srd.unitise(); //shadow ray direction
-
-				Ray sr(hit.getPoint(), srd);
-
-				for (uint8_t j = 0; j < objects.size(); j++)
-				{
-					hl = objects[j]->Intersect(sr, 50);//r.intersect(objects[j], 50);
-					if (hl.getDistance() > eps5) break;
-					hl = HitInfo(float3(), float3(), Color::RED, -1);
-					//float3 p;
-				}
-				float vi =(hl.getDistance() < 0) ? 1.f : 0.f; // visibilisit
-															   //float visible = (hl.getDistance() <= 0) ? 1.f : 0.f;
-
-				 //shadow ray
-
-
-
-				float3 L = lights[k]->getPosition() - hit.getPoint();
-				L.unitise();
-
-				//float LdotN = float3::dot(L, hit.getNormal());
-				float LdotN = float3::dot(hit.getNormal(), L);
-
-				if (LdotN < 0) LdotN = 0.f;
-
-				float3 H = L - r.getDirection();
-				H.unitise();
-
-				//	float3 R = hit.getNormal() * (2.0* (float3::dot(L, hit.getNormal()))) - L;
-
-			//	float nh = pow(float3::dot(hit.getNormal(), H), 64);
-				float nh = pow(float3::dot(hit.getNormal(), H), objectHit->getMaterial().getC());		// dla wspolczynnika rozblysku, potega 2
-
-				diffuse = id*objectHit->getColor(hit.getPoint())*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
-				specular = is*nh*lights[k]->getColor()*vi;
-				diffuseSum += diffuse*brightness*vi;
-				specularSum += specular*brightness*vi;
-
-				//pc += ia +
-				//	hit.getColor() *LdotN*vi +
-				//	is*nh*vi;
-				//pc.cut();
-
-				//		pc = objectHit->getColor();
-
-			}
-			colors[i] += diffuseSum*objectHit->getMaterial().getD() + specularSum*objectHit->getMaterial().getS();
-			colors[i].cut();
-			//	colors[i] += pc;///objectHit->getColor();// *(1 - pr);
-								//	colors[i] += pc;// *(1 - pr);
-
-		}
-		else
-		{
-			colors[i] += bg;// *(1 - pr);
-
-		}
+		colors[i] = GetColor(r, 5, objects, lights, zDepth);
 	}
 
 	//czy kolory roznia sie od siebie (margines 0.01)
@@ -305,13 +176,220 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 
 }
 
+Color Camera::GetColor(Ray ray, int lvl, vector<Primitive*>& objects, vector<Light*>& lights, float& zDepth)
+{
+	Color color = Color::BLACK;
+	Color bg(0.0f, .0f, 0.0f);
+
+	Color
+		ia(0.1f, 0.05f, 0.0f),
+		id(1.f, 1.f, 1.f),
+		is(1.f, 1.f, 1.f)
+		;
+
+
+	Primitive *objectHit = NULL; //najblizszy obiekt
+	HitInfo hit(float3(), float3(), Color::RED, INFINITY);// = objects[j]->Intersect(r, 50);//r.intersect(objects[j], 50);
+	float lastDistance = INFINITY; //odleglosc do aktualnego, najblizszego
+
+								   //Ray r(m_location, pxRay);
+								   //	
+
+
+	for (int j = 0; j < objects.size(); j++)
+	{
+		HitInfo	hi = objects[j]->Intersect(ray, 50);
+
+		if (hi.getDistance() > 0 && hi.getDistance() < hit.getDistance())
+		{
+			lastDistance = hi.getDistance();
+			objectHit = objects[j];
+			hit = hi;
+		}
+	}
+
+	//jesli znalazl cokolwiek to pobierz kolor obiektu
+	if (hit.getDistance() < INFINITY && objectHit != nullptr)
+	{
+		//	Color pc = Color::BLACK;
+		Color ambient = ia*objectHit->getMaterial().getA();	// ambient do phonga
+		float brightness = 0;
+
+		color += ambient;
+
+		Color diffuseSum = Color::BLACK;
+		Color specularSum = Color::BLACK;
+		Color reflectedColor = Color::BLACK;
+		Color transmittedColor = Color::BLACK;
+
+		float isReflective = 0;
+		float isTransmissive = 0;
+
+		// jesli diffuse
+		//swiatla~!!
+
+		//* skladowa diffuse i specular << do rozdzielenia
+		//if (objectHit->getMaterial().getD() > 0.0f)
+		{
+			for (int k = 0; k < lights.size(); k++) {
+				Color diffuse = Color::BLACK;
+				Color specular = Color::BLACK;
+
+				if (lights[k]->getLightType() == 1) {																// uwaga, wartosci wpisane na sztywno!
+					float d = float3::distance(lights[k]->getPosition(), hit.getPoint());
+					//brightness = 1 / (0.02f + 0.05f * d + 0.05f * d * d);
+					brightness = 1 / (lights[k]->getConstA() + lights[k]->getLinearA() * d + lights[k]->getQuadA() * d * d);
+					//brightness = 1;
+				}
+
+				else brightness = 1;
+
+
+				//shadow ray
+				HitInfo hl;
+				float3 srd = lights[k]->getPosition() - hit.getPoint(); // czemu nie odwrotnie
+				srd.unitise(); //shadow ray direction
+
+				Ray sr(hit.getPoint(), srd);
+
+				for (int j = 0; j < objects.size(); j++)
+				{
+					hl = objects[j]->Intersect(sr, 50);//r.intersect(objects[j], 50);
+					if (hl.getDistance() > eps5) break;
+					hl = HitInfo(float3(), float3(), Color::RED, -1);
+					//float3 p;
+				}
+				float vi = (hl.getDistance() < 0) ? 1.f : 0.f; // visibilisit
+															   //float visible = (hl.getDistance() <= 0) ? 1.f : 0.f;
+
+															   //shadow ray
+
+
+
+				float3 L = lights[k]->getPosition() - hit.getPoint();
+				L.unitise();
+
+				//float LdotN = float3::dot(L, hit.getNormal());
+				float LdotN = float3::dot(hit.getNormal(), L);
+
+				if (LdotN < 0) LdotN = 0.f;
+
+				float3 H = L - ray.getDirection();
+				H.unitise();
+
+				//	float3 R = hit.getNormal() * (2.0* (float3::dot(L, hit.getNormal()))) - L;
+
+				//	float nh = pow(float3::dot(hit.getNormal(), H), 64);
+				float nh = pow(float3::dot(hit.getNormal(), H), objectHit->getMaterial().getC());		// dla wspolczynnika rozblysku, potega 2
+
+				diffuse = id*objectHit->getColor(hit.getPoint())*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
+				specular = is*nh*lights[k]->getColor()*vi;
+				diffuseSum += diffuse*brightness*vi;
+				specularSum += specular*brightness*vi;
+
+				//pc += ia +
+				//	hit.getColor() *LdotN*vi +
+				//	is*nh*vi;
+				//pc.cut();
+
+				//		pc = objectHit->getColor();
+
+			}
+			//	color += diffuseSum*objectHit->getMaterial().getD() + specularSum*objectHit->getMaterial().getS();
+				//	color.cut();
+		}//*/
+		// lustrzany
+		if (lvl > 0)
+		{
+			
+			if (objectHit->getMaterial().getReflectivity() > 0.0)
+			{
+				isReflective = 1.f;
+				float NdotI = float3::dot(ray.getDirection(), hit.getNormal()); // cos kata padajacego
+				float3 R = ray.getDirection() - hit.getNormal() * 2 * NdotI;
+				R.unitise();
+				float3 offset = R*eps3;
+
+				Ray// rayR(hit.getPoint(), R);
+					rayR(hit.getPoint() + offset, R);
+
+				reflectedColor += GetColor(rayR, lvl - 1, objects, lights, zDepth) * objectHit->getMaterial().getKRefl();
+				reflectedColor.cut();
+			}
+			
+
+			// refrakcyjny
+			//else 
+			if (objectHit->getMaterial().getRefraction() > 0.0)
+			{
+			//	cout << "refr";
+				
+			//	isTransmissive = 1.0f;
+				float rIndex = objectHit->getMaterial().getRefraction();	//index refrakcji
+				float n = REFRACTION_AIR / rIndex; // stosunek indeksow refrakcji roznych oœrodków/
+				float NdotI = float3::dot(ray.getDirection(), hit.getNormal()); // cos kata padajacego
+				
+				float3 N = hit.getNormal();// *hit.getIsInside();
+				if (NdotI > 0) {
+					N = N* -1;
+					NdotI = float3::dot(ray.getDirection(), hit.getNormal()); // cos kata padajacego
+				//	cout << "rev. N" << endl;
+				}
+
+				float sin2t = (n*n) * (1.f - NdotI*NdotI);
+
+				if (sin2t < 1.f)
+				{
+					float3 T = ray.getDirection()*n - N * (n + sqrtf(1.0f - sin2t));
+					T.unitise();
+					float3 offset = T*eps3;
+
+					Ray rayT(hit.getPoint() + offset, T);
+					Color absorbance = objectHit->getMaterial().getColor() * 0.15f * hit.getDistance();
+					Color transparency = Color(expf(absorbance.getR()), expf(absorbance.getG()), expf(absorbance.getB()), 1.0f);
+
+					transmittedColor += transparency* GetColor(rayT, lvl - 1, objects, lights, zDepth) *objectHit->getMaterial().getKRefr();
+					transmittedColor.cut();
+
+				//	diffuseSum = transmittedColor;
+
+				}
+
+				//float3 N = hit.getNormal() // *hit.getResult();
+			//	N.unitise();
+
+				//!!todo -- trzymac 2 ostatnie object hity, i pobierac z nich iRefrekcji, jesli drugi hit == null, wtedy iR = 1 (powietrze)
+			}
+
+
+		}
+		//else
+		//	reflectedColor += Color::BLACK;
+
+		color
+			+= reflectedColor * isReflective *  objectHit->getMaterial().getReflectivity()
+			+ transmittedColor //* isTransmissive
+			+ diffuseSum * objectHit->getMaterial().getD() //* (1.0 - isTransmissive)
+			+ specularSum*objectHit->getMaterial().getS();
+
+		color.cut();
+	}
+	else
+	{
+		color = bg;// *(1 - pr);
+
+	}
+
+
+	return color;
+}
 
 void Camera::RenderImage(RenderContext& bitmap, vector<Primitive*> &objects, vector<Light*> &lights)
 {
 	//BROFILER_CATEGORY("RenderImage", Profiler::Color::Orchid)
 
 
-		float zMin = 100.f, zMax = 0.f;
+	float zMin = 100.f, zMax = 0.f;
 	float zDepth = 0;
 
 	float aspectRatio = float(bitmap.getWidth()) / float(bitmap.getHeight());

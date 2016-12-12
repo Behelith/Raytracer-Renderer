@@ -36,6 +36,17 @@ const float eps5 = 0.00001f;
 const float UNDEFINED = INFINITY;
 const float PI = 3.14159265f;
 const float PIx2 = 6.28318530f;
+
+//indeksy refrakcji
+const float REFRACTION_VACUUM = 1.0000f;
+const float REFRACTION_AIR = 1.0003f;
+const float REFRACTION_ICE = 1.3100f;
+const float REFRACTION_WATER = 1.3330f;
+const float REFRACTION_GASOLINE = 1.3980f;
+const float REFRACTION_GLASS = 1.5500f;
+const float REFRACTION_SAPPHIRE = 1.7700f;
+const float REFRACTION_DIAMOND = 2.4190f;
+
 typedef unsigned int nat;
 
 inline float uRand();

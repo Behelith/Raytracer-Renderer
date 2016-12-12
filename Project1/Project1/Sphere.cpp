@@ -63,7 +63,7 @@ HitInfo Sphere::Intersect(Ray &ray, float distance)
 	//cout << "i1: " << i1 << ", i2: " << i2 << endl;
 
 	if (i1 < distance) tmp = i1;	// wiec zwracamy mniejszy pierwiastek
-	if (i1 <0 && i2 < distance) tmp = i2;	// jesli pierwszy jest jednak ujemny (punkt lezy w srodku sfery) to zwracamy drugi. 
+	if (i1 < 0 && i2 < distance) tmp = i2;	// jesli pierwszy jest jednak ujemny (punkt lezy w srodku sfery) to zwracamy drugi. 
 											//if (i1 < distance) return i1;
 											//if (i2 < distance) return i2;
 
@@ -88,10 +88,10 @@ HitInfo Sphere::Intersect(Ray &ray, float distance)
 		return HitInfo(n, p, getColor(p), tmp);
 
 
-	//	return tmp;
+		//	return tmp;
 	}
 
-else
+//	else
 	{
 		float3 p(ray.getOrigin() + ray.getDirection() * tmp);
 		float3 p2(ray.getOrigin() + ray.getDirection() * i2);

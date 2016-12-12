@@ -16,24 +16,26 @@ Mesh::~Mesh()
 {
 	m_triangles.clear();
 	m_vertices.clear();
+	m_uvs.clear();
 }
 
 HitInfo Mesh::Intersect(Ray& ray, float distance)
 {
-	HitInfo objectHit(float3(), float3(), Color::YELLOW, INFINITY);
+	HitInfo objectHit(float3(), float3(), Color::GREEN, INFINITY);
 
 
 	for (int i = 0; i < m_triangles.size(); i++)
 		//for (Triangle t : m_triangles)
 	{
-		HitInfo nearestHit = m_triangles[i].Intersect(ray, distance);
+		HitInfo nearestHit = m_triangles[i].Intersect(ray, distance, m_vertices[m_triangles[i].m_indecies[0]], m_vertices[m_triangles[i].m_indecies[1]], m_vertices[m_triangles[i].m_indecies[2]], &m_uvw);
 		//float isectt =
+		nearestHit.setTIndex(i);
 
 		if (nearestHit.getDistance() > 0 && nearestHit.getDistance() < objectHit.getDistance())
 		{
-			//	c = i;
+			//	tIndex = i;
 			objectHit = nearestHit;
-			float3 p = ray.getOrigin() + ray.getDirection()*nearestHit.getDistance();
+			//float3 p = ray.getOrigin() + ray.getDirection()*nearestHit.getDistance();
 			//	return HitInfo(m_triangles[i].getNormal(), p, getColor(), hi.getDistance());
 			//	break;
 		}
@@ -44,8 +46,73 @@ HitInfo Mesh::Intersect(Ray& ray, float distance)
 		objectHit.setColor(getColor(float3()));
 		return objectHit;
 	}
-	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::WHITE, -1);
+	return HitInfo();
 
+}
+
+Color Mesh::getColor(float3 point)
+{
+	//return *m_color;
+	if (m_material->getIsTextured())
+	{
+		tIndex = 1;
+		//m_triangles[c].
+			// pole trojkata abc =  || (b - a) X (c-a) || /2;
+
+			//float3 e1 = *m_verts[1] - *m_verts[0];
+			//float3 e2 = *m_verts[2] - *m_verts[0];	
+		float3 ab = m_vertices[m_triangles[tIndex].m_indecies[1]] - m_vertices[m_triangles[tIndex].m_indecies[0]];
+		float3 ac = m_vertices[m_triangles[tIndex].m_indecies[2]] - m_vertices[m_triangles[tIndex].m_indecies[0]];
+		float3 cb = m_vertices[m_triangles[tIndex].m_indecies[2]] - m_vertices[m_triangles[tIndex].m_indecies[1]];
+		float3 ap = point - m_vertices[m_triangles[tIndex].m_indecies[0]];
+		float3 bp = point - m_vertices[m_triangles[tIndex].m_indecies[1]];
+		float3 cp = point - m_vertices[m_triangles[tIndex].m_indecies[2]];
+
+
+		float abc =  float3::cross(ab, ac).length() * 0.5f;
+
+		// u = cap/ abc
+		//float cap = float3::cross(*m_verts[0] - *m_verts[2], point - *m_verts[2]).length()*0.5f;
+		float cap = float3::cross(ac, cp).length()*0.5f;
+
+		// v = abp / abc
+		//float abp = float3::cross(*m_verts[1] - *m_verts[0], point - *m_verts[0]).length()*0.5f;
+		float abp = float3::cross(ab, ap).length()*0.5f;
+		float bcp = float3::cross(cb, bp).length()*0.5f;
+
+
+		//w
+	//	float bcp = float3::cross(m_vertices[m_triangles[c].m_indecies[2]] - m_vertices[m_triangles[c].m_indecies[1]], point - m_vertices[m_triangles[c].m_indecies[1]]).length()*0.5f;
+
+		float u = cap / abc;
+		float v = abp / abc;
+	//	float w = bcp / abc;
+	//	*/
+		//*
+		if (u < 0) u = 0;
+		else if (u > 1.0) u = 1;
+
+		if (v < 0) v = 0;
+		else if (v > 1.0) v = 1;
+
+		//if (w < 0) w = 0;
+		//else if (w > 1.0) w = 1;
+
+		float w = 1.f - (u + v);
+		//*/
+		float2 uv1 = m_uvs[m_triangles[tIndex].m_indecies[0]] * u ;
+		float2 uv2 = m_uvs[m_triangles[tIndex].m_indecies[1]] * v;
+//		float2 uv3 = m_uvs[m_triangles[c].m_indecies[2]] * uvw.z;
+//		float2 uvw2 = uv1 + uv2 + uv3;
+
+		int x = (u* m_material->getTexture().getWidth());
+		int y = (v* m_material->getTexture().getHeight());
+
+		//	return Color(m_material->getTexture().getComponents()[x + y*m_material->getTexture().getWidth()]);
+
+		return Color(m_material->getTexture().getComponents()[x + y * m_material->getTexture().getWidth()]);
+	}
+	return m_material->getColor();
 }
 
 void split(std::string str, std::string splitBy, std::vector<std::string>& tokens)
@@ -88,6 +155,7 @@ bool Mesh::importOBJ(string filename)
 	string line;
 	m_vertices.clear();
 	m_triangles.clear();
+	m_uvs.clear();
 	int i = 0;
 	//string s;
 	//vector<float3> v;
@@ -105,42 +173,54 @@ bool Mesh::importOBJ(string filename)
 			{
 				m_vertices.push_back(float3(stof(tmp1[1]), stof(tmp1[2]), stof(tmp1[3])));
 			}
-			else if (tmp1[0] == "vt") isTextured = true;
+			else if (tmp1[0] == "vt")
+			{
+				m_uvs.push_back(
+					float2(
+						stof(tmp1[1]),
+						stof(tmp1[2])
+					)
+				);
+				isTextured = true;
+
+			}
 			else if (/*isTextured && */tmp1[0] == "f")
 			{
 				vector <string> tmp2;
-				float3 *a, *b, *c;
+				//	float3 *a, *b, *c;
 
+				vector <int> ind;
 				split(tmp1[1], "/", tmp2);
-				a = &m_vertices[stoi(tmp2[0]) - 1];
+				ind.push_back(stoi(tmp2[0]) - 1);
 				tmp2.clear();
 
 				split(tmp1[2], "/", tmp2);
-				b = &m_vertices[stoi(tmp2[0]) - 1];
+				ind.push_back(stoi(tmp2[0]) - 1);
 				tmp2.clear();
 
 				split(tmp1[3], "/", tmp2);
-				c = &m_vertices[stoi(tmp2[0]) - 1];
+				ind.push_back(stoi(tmp2[0]) - 1);
 				tmp2.clear();
+
+				//split(tmp1[1], "/", tmp2);
+				//a = &m_vertices[stoi(tmp2[0]) - 1];
+				//tmp2.clear();
+
+				//split(tmp1[2], "/", tmp2);
+				//b = &m_vertices[stoi(tmp2[0]) - 1];
+				//tmp2.clear();
+
+				//split(tmp1[3], "/", tmp2);
+				//c = &m_vertices[stoi(tmp2[0]) - 1];
+				//tmp2.clear();
 
 				//	if (i == 1) m_triangles.push_back(Triangle(a, b, c, Color::DVIOLET));
 				//	else
-				switch (i)
-				{
-				case 0:
-					m_triangles.push_back(Triangle(a, b, c, *m_material));
-					break;
-				case 1:
-					m_triangles.push_back(Triangle(a, b, c, *m_material));
-					break;
+				Triangle tempT(ind, *m_material);
 
-				case 2:
-					m_triangles.push_back(Triangle(a, b, c, *m_material));
-					break;
-				default:
-					m_triangles.push_back(Triangle(a, b, c, *m_material));
-					break;
-				}
+
+				m_triangles.push_back(tempT);
+
 			}
 			i = (i + 1) % 4;
 		}
@@ -149,80 +229,6 @@ bool Mesh::importOBJ(string filename)
 
 	cout << "vertexow: " << m_vertices.size() << endl;
 	cout << "trojkatow: " << m_triangles.size() << endl;
-
-	return true;
-}
-
-bool Mesh::importOBJ(string filename, vector<Mesh> &meshes)
-{
-	//Mesh *mesh = nullptr;
-
-	string line;
-	int i = 0;
-	int objectsCounter = 0;
-	int index = -1;
-	bool isTextured = false;
-
-	ifstream myfile(filename);
-
-	if (myfile.is_open())
-	{
-		while (getline(myfile, line))
-		{
-			vector <string> tmp1;
-			split(line, " ", tmp1);
-			if (tmp1[0] == "o")
-			{
-				meshes.push_back(Mesh());
-				//	isTextured = false;
-				index = meshes.size() - 1;
-				cout << "index: " << index << endl;
-			}
-
-			if (index == 0)
-			{
-				if (tmp1[0] == "v")
-				{
-					meshes[index].getVertices().push_back(float3(stof(tmp1[1]), stof(tmp1[2]), stof(tmp1[3])));
-				}
-				else if (tmp1[0] == "vt") isTextured = true;
-				else if (tmp1[0] == "f")
-				{
-					vector <string> tmp2;
-					float3 *a, *b, *c;
-
-					split(tmp1[1], "/", tmp2);
-					a = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
-					tmp2.clear();
-
-					split(tmp1[2], "/", tmp2);
-					b = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
-					tmp2.clear();
-
-					split(tmp1[3], "/", tmp2);
-					c = &meshes[index].getVertices()[stoi(tmp2[0]) - 1];
-					tmp2.clear();
-
-					if (i == 1) meshes[index].getTriangles().push_back(Triangle(a, b, c, Material::GREEN));
-					else meshes[index].getTriangles().push_back(Triangle(a, b, c, Material::DBLUE_D));
-					//	cout << "tx " << endl;
-				}
-
-				//	line.
-				i = (i + 1) % 2;
-			}
-		}
-
-		myfile.close();
-	}
-
-	//	cout << "vertexow: " << meshes[0]. << endl;
-	for (int i = 0; i < meshes.size(); i++)
-	{
-
-		cout << "verteksow: " << meshes[i].getVertices().size() << endl;
-		cout << "trojkatow: " << meshes[i].getTriangles().size() << endl;
-	}
 
 	return true;
 }

@@ -6,7 +6,7 @@
 #include "Sphere.h"
 #include "Light.h"
 
-class Camera 
+class Camera
 {
 protected:
 	float3 m_location;
@@ -29,11 +29,12 @@ public:
 	Camera(float3 location, float3 direction, float3 up, float fov);
 	// kamera ortogonalna
 	Camera(float3 location, float3 direction, float3 up);
-	
+
 	~Camera();
 
 	void LookAt(float3 target);
 	Color Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &objects, vector<Light*> &lights, float &zDepth, int level = 0);
-	void RenderImage (RenderContext &bitmap, vector<Primitive*> &objectss, vector<Light*> &lights);
+	Color GetColor(Ray ray, int lvl, vector<Primitive*> &objects, vector<Light*> &lights, float &zDepth);
+	void RenderImage(RenderContext &bitmap, vector<Primitive*> &objectss, vector<Light*> &lights);
 };
 

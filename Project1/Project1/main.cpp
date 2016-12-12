@@ -26,24 +26,24 @@ int main(int argc, char * argv[])
 {
 
 	auto start = get_time::now();
-	int w = 
+	int w =
 		400, h = 400;
-
+	int isRendering = 0;
 	//RenderContext bitmap(w, h);
 
 	//siatki
 	vector <Mesh> meshes;
-
 	//swiatla
 	vector <Light*> lights;
-	//lights.push_back(new Light(float3(0.f, 2.f, -1.f), Color::WHITE));
-	
-	//kamera
-	Camera cam(float3(0.0f, 2.f, -2.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
-//	Camera cam(float3(0.0f, 2.f, -2.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
-	
 	//scena
 	vector <Primitive*> sc;
+	//lights.push_back(new Light(float3(0.f, 2.f, -1.f), Color::WHITE));
+
+	//kamera
+	//Camera cam(float3(0.0f, 2.f, -2.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
+//	Camera cam(float3(0.0f, 2.f, -2.f), float3(0, 0, 0), float3(0, 1, 0), 60.f); //perspective
+
+
 	//sc.push_back(new Sphere(float3(0.f, 0.f, 0.0f), 0.5f, Material::ORANGE));
 
 
@@ -52,108 +52,74 @@ int main(int argc, char * argv[])
 	//for (int i = 0; i < meshes.size(); i++)
 
 
-	//lights.push_back(new PointLight(float3(-2.f, 1.5f, 0.3f), Color::RED, 0.02f, 0.05f, 0.05f));
-	//lights.push_back(new PointLight(float3(0.f, 1.5f, 0.3f), Color::GREEN, 0.02f, 0.05f, 0.05f));
-	//lights.push_back(new PointLight(float3(2.f, 1.5f, 0.3f), Color::BLUE, 0.02f, 0.05f, 0.05f));
+	/* CORNELL BOX */
+	Camera cam(float3(0.0f, 2.5f, -3.5f), float3(0, .7f, 0), float3(0, 1, 0), 40.f); //perspective
 
-	//sc.push_back(new Sphere(float3(-0.6f, 0.4f, 0.f), 0.3f, Material::GRAY));
-	sc.push_back(new Sphere(float3(0.f, 0.4f, 0.f), 0.3f, Material::GRAY));
-	//sc.push_back(new Sphere(float3(0.6f, 0.4f, 0.f), 0.3f, Material::RED_D));
-	//sc.push_back(new Mesh("obj/st.obj", Material::GRAY));
-	sc.push_back(new Mesh("obj/p2.obj", Material::GRAY));
-	lights.push_back(new PointLight(float3(-4.f, 2.5f, 1.f), Color::WHITE, 0.02f, 0.05f, 0.05f));
-	lights.push_back(new PointLight(float3(5.f, 2.5f, -1.f), Color::WHITE, 0.02f, 0.05f, 0.05f));
+	//sc.push_back(new Sphere(float3(-0.2f, 0.375f, 0.1f), 0.45f, Material::MIRROR));
+	//sc.push_back(new Sphere(float3(0.3f, 0.237f, -0.45f), 0.3f, Material::GLASS));
+	sc.push_back(new Mesh("obj/p2.obj", Material::GREEN));
+	sc.push_back(new Mesh("obj/c1.obj", Material::RED_D));
+	sc.push_back(new Mesh("obj/c2.obj", Material::WHITE_S));
+	sc.push_back(new Mesh("obj/c3.obj", Material::DBLUE_D));
+
+	lights.push_back(new PointLight(float3(0.0f, 2.5f, 0.05f), Color::GRAY, 0.05f, 0.05f, 0.05f));
+
+	isRendering = 1;
 
 
-	/*
-	lights.push_back(new PointLight(float3(-4.f, 2.5f, 1.f), Color::WHITE, 0.02f, 0.05f, 0.05f));
-	sc.push_back(new Sphere(float3(-0.5f, 0.0f, 0.5f), 0.3f, Material::ORANGE));
-	sc.push_back(new Mesh("obj/st.obj", Material::RED_D));
-	sc.push_back(new Mesh("obj/p2.obj", Material::GRAY));
-	*/
+	if (isRendering == 0)
+	{
+	
+		Ray r(float3(0, 0, 2),float3(0, 0, 1) );
+		HitInfo hi = sc[0]->Intersect(r, 10);
+		float3 N(0, 1, 0);
 
-	/*/ ATTENUATION TEST
-	lights.push_back(new PointLight(float3(0.f, 1.5f, 0.f), Color::WHITE));
-	sc.push_back(new Sphere(float3(3.f, 0.f, 0.75f), 0.5f, Material::RED_D));
-	sc.push_back(new Sphere(float3(3.f, 0.f, -0.75f), 0.5f, Material::DBLUE_D));
-	sc.push_back(new Sphere(float3(4.f, -1.f, 0.f), 0.5f, Material::RED_D));
-	sc.push_back(new Sphere(float3(7.f, 1.f, 0.f), 0.5f, Material::RED_D));
-	Camera cam(float3(.0f, 0.1f, .0f), float3(1, 0, 0), float3(0, 1, 0), 40.f);
-	*/
+
+
+	float3 v1(-1.f, 0.f, 1.f);
+		v1.unitise();
+	//for (float i = 1; i > -1.0; i -= 0.1f)
+		{
+			float3 v2(-0.9f, 0.f, 1.f);
+			v2.unitise();
+			//float cosI = float3::dot(hi.getNormal(), r.getDirection());
+			//float cosI = float3::dot(r.getDirection(), hi.getNormal());
+			//cout << "\t\thi: normal \t" << hi.getNormal() << endl;
+
+			cout << "\t\thi: cos v1v2\t" << float3::dot(v1, v2) << endl;
+			v2 = -v2;
+			cout << "\t\thi: cos v1v2\t" << float3::dot(v1, v2) << endl;
+		}
+	}
+	//*/
+
 
 	//cout << " models: " << sc.size() << endl;
 	Texture t("az.png");
-	Texture t2("render2.png");
+	Texture t2("za.png");
 
-	Material::GRAY.setTexture(t);
+	//Material::GRAY.setTexture(t);
+	Material::GREEN.setTexture(t2);
 	RenderContext bitmap(t2.getWidth(), t2.getHeight());
 	//bitmap.draw(Material::GRAY.getTexture());
 	//while (true)
+	if (isRendering == 1)
 	{
-//		BROFILER_FRAME("rendering")
-			cout << "start.." << endl;
-
+		//		BROFILER_FRAME("rendering")
+		cout << "start" << endl;
 		cam.RenderImage(bitmap, sc, lights);
-		cout << ".. done " << endl;
+		cout << "done " << endl;
 
 	}
 	auto end = get_time::now();
 	auto diff = end - start;
 	cout << "Elapsed time is :  " << chrono::duration_cast<std::chrono::milliseconds>(diff).count() << " ns " << endl;
 
+	if (isRendering == 1)
+		Display display("okno_1", bitmap);
 
-
-	//Color rr(1.f, 0.5f, 0.1f);
-	//unsigned int ra = rr.toHex();
-	//cout << "R: " << Color::rToInt(ra) << endl;
-	//cout << "G: " << Color::gToInt(ra) << endl;
-	//cout << "B: " << Color::bToInt(ra) << endl;
-	/*
-	for (int j = 0; j < h; j++)
-	{
-		for (int i = 0; i < w; i++)
-		{
-			bitmap.DrawPixel(i, j, 0xffff22ff);
-		}
-	}
-
-	//*/
-	w = 2; h = 2;
-
-	//load img
-	//Material mt ("render.png", 0.8f, 0.1f);
-	
-
-
-	Display display("okno_1", bitmap);
-
-	/*		//save IMAGE TO PNG
-	FreeImage_Initialise();
-	//int tw = w, th = h;
-	FIBITMAP *bm = FreeImage_Allocate(w, h, 24, 0xff0000, 0x00ff00, 0x0000ff);
-	RGBQUAD color;
-	
-	for (int j = 0; j < h; j++)
-	{
-		for (int i = 0; i < w; i++)
-		{
-			unsigned int tmpColor = bitmap.getColorAt(i, h-j);
-			color.rgbRed = (double)Color::rToInt(tmpColor);
-			color.rgbGreen = (double)Color::gToInt(tmpColor);
-			color.rgbBlue = (double)Color::bToInt(tmpColor);
-			//color.rgbRed = 0.0;
-			//color.rgbGreen = 0.0;
-			//color.rgbBlue = 255.0;
-			
-			FreeImage_SetPixelColor(bm, i, j, &color);
-		}
-	}
-	if (FreeImage_Save(FIF_PNG, bm, "render.png", 0)) {		cout << " bitmap successfully saved! " << endl;		}
-
-
-	FreeImage_DeInitialise();
-	//*/
-	_getch();
+	if (isRendering == 0)
+		_getch();
 
 	for (auto &p : sc)
 		delete p;

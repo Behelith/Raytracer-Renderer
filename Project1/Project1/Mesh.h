@@ -6,7 +6,8 @@ class Mesh :
 	public Primitive
 {
 private:
-	int c;
+	int tIndex;
+	float3 m_uvw = float3 ();
 
 public:
 	Mesh();
@@ -14,14 +15,11 @@ public:
 	~Mesh();
 
 	vector <float3> m_vertices;
+	vector <float2> m_uvs;
 	vector <Triangle> m_triangles;
 	HitInfo Intersect(Ray &ray, float distance);
-	
-	Color getColor(float3 point)
-	{
-		//return *m_color;
-		return  m_triangles[c].getColor(point);
-	}
+
+	Color getColor(float3 point);
 
 
 	bool static importOBJ(string filename, vector<Mesh> &meshes);

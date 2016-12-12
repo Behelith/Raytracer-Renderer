@@ -4,11 +4,13 @@
 
 Triangle::Triangle() //: m_verts[0](float3(0,0,0)), m_b(float3(0, 0, 0)), m_c(float3(0, 0, 0))
 {
+//	m_vertices = new
 	//m_verts[0] = float3(0, 0, 0); //v0
 	//m_verts[1] = float3(0, 0, 0); //v1
 	//m_verts[2] = float3(0, 0, 0); //v2
 }
 
+/*
 Triangle::Triangle(float3* a, float3 *b, float3* c, Material &material)// : m_a(a), m_b(b), m_c(c)
 {
 	m_verts.push_back(a);
@@ -21,24 +23,67 @@ Triangle::Triangle(float3* a, float3 *b, float3* c, Material &material)// : m_a(
 
 	setMaterial(material);
 }
+*/
+
+Triangle::Triangle(vector<int> indecies, Material& material)
+{
+	m_indecies = indecies;
+	m_normal.unitise();
+
+	setMaterial(material);
+
+}
 
 Triangle::~Triangle()
 {
-	m_verts.clear();
+	//delete	m_vertices;
+//	delete m_uvs;
+	//m_verts.clear();
 }
 
 void Triangle::setColor(Color &color)
 {
-//	m_color =&color;
+	//	m_color =&color;
 }
 
-HitInfo Triangle::Intersect(Ray& ray, float distance)
+Color Triangle::getColor(float3 point)
+{
+	//	if (!getMaterial().getIsTextured())
+	//return getMaterial().getColor();
+	return Color::GREEN;
+	//else
+	//{
+	//	// pole trojkata abc =  || (b - a) X (c-a) || /2;
+
+	//	//float3 e1 = *m_verts[1] - *m_verts[0];
+	//	//float3 e2 = *m_verts[2] - *m_verts[0];
+
+	//	float abc= float3::cross(*m_verts[1] - *m_verts[0], *m_verts[2] - *m_verts[0]).length()*0.5f;
+
+	//	// u = cap/ abc
+	//	float cap = float3::cross(*m_verts[0] - *m_verts[2], point - *m_verts[2]).length()*0.5f;
+	//	// v = abp / abc
+	//	float abp = float3::cross(*m_verts[1] - *m_verts[0], point - *m_verts[0]).length()*0.5f;
+
+	//	float u = cap / abc;
+	//	float v = abp / abc;
+
+
+	//	int x = (u* m_material->getTexture().getWidth());
+	//	int y = (v* m_material->getTexture().getHeight());
+
+	//	return Color(m_material->getTexture().getComponents()[x + y*m_material->getTexture().getWidth()]);
+	//}
+	//return *m_color;
+}
+
+HitInfo Triangle::Intersect(Ray& ray, float distance, float3 a, float3 b, float3 c, float3 *uvw)
 {
 	//BROFILER_CATEGORY ("intersect", Profiler::Color::Green)
 
 
-		float3 e1 = *m_verts[1] - *m_verts[0];
-	float3 e2 = *m_verts[2] - *m_verts[0];
+	float3 e1 = b - a;
+	float3 e2 = c - a;
 
 	// z rozwiazania macierzy
 	//P = D x e2
@@ -52,8 +97,8 @@ HitInfo Triangle::Intersect(Ray& ray, float distance)
 									//culling: jesli to prawdzwe, to trojkat jest tylem; jesli jest blisko zera to nie trafia w trojkat;
 									//cout << det << endl;
 	if (-eps5 < det < eps5)
-	//if (det > -eps5 && det < eps5)
-		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
+		//if (det > -eps5 && det < eps5)
+		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::GREEN, -1);
 	//	return -1;
 
 	//if (fabs(det) < eps5) 
@@ -62,7 +107,7 @@ HitInfo Triangle::Intersect(Ray& ray, float distance)
 
 	float iDet = 1.f / det;
 
-	float3 t = ray.getOrigin() - *m_verts[0];
+	float3 t = ray.getOrigin() - a;
 	m_u = float3::dot(t, p) * iDet;
 	if (m_u < 0 || m_u > 1)// return -1.f;
 		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
@@ -87,13 +132,14 @@ HitInfo Triangle::Intersect(Ray& ray, float distance)
 		float3 point = ray.getOrigin() + ray.getDirection()*m_w;
 
 		//normalna sie liczy tak:
-		//float3 n = float3::cross(e1, e2);
-		//n.unitise();
+		float3 n = float3::cross(e1, e2);
+		n.unitise();
 
 		//return HitInfo(getNormal(), p, Color::WHITE, m_w);
-		return HitInfo(getNormal(), point, getColor(point), m_w);
+		return HitInfo(n, point, getColor(point), m_w);
 		//	return m_w;
 	}
 
+	uvw = new float3(m_u, m_v, m_w);
 	return HitInfo(float3(0, 0, 0), float3(0, 0, 0), Color::RED, -1);
 }
