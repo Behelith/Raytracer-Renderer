@@ -2,6 +2,7 @@
 #include "structures.h"
 #include "RenderContext.h"
 #include "Primitive.h"
+#include "float3.h"
 //#include "Ray.h"
 #include "Sphere.h"
 #include "Light.h"

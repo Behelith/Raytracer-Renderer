@@ -1,5 +1,6 @@
 #pragma once
 #include "structures.h"
+#include "float3.h"
 #include "Primitive.h"
 
 class Triangle : public Primitive

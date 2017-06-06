@@ -16,7 +16,7 @@ Camera::Camera()
 	//direction - gdzie patrzy kamea
 	m_w = m_location - m_target;
 
-	m_w.unitise();
+	m_w.normalize();
 
 	m_u = float3::cross(m_up, m_w); // right vector
 									//m_u = float3::cross(m_w, m_up); // right vector
@@ -36,7 +36,7 @@ Camera::Camera(float3 location, float3 direction, float3 up, float fov)
 
 	//direction - gdzie patrzy kamea
 	m_w = m_location - m_target;
-	m_w.unitise();
+	m_w.normalize();
 
 	//m_u = float3::cross(m_w,-m_up); // right vector
 	m_u = float3::cross(m_up, m_w); // right vector
@@ -58,7 +58,7 @@ Camera::Camera(float3 location, float3 direction, float3 up)
 
 	//direction - gdzie patrzy kamea
 	m_w = m_location - m_target;
-	m_w.unitise();
+	m_w.normalize();
 
 	m_u = float3::cross(m_up, m_w); // right vector
 									//m_u = float3::cross(m_w, m_up); // right vector
@@ -78,7 +78,7 @@ void Camera::LookAt(float3 target)
 	m_direction = m_location - m_target;
 
 	m_w = m_direction;// prosto
-	m_w.unitise();
+	m_w.normalize();
 
 	m_u = float3::cross(m_up, m_w); // right vector
 									//m_u = float3::cross(m_w, m_up); // right vector
@@ -129,7 +129,7 @@ Color Camera::Sampling(float2 sCenter, float2 dimensions, vector<Primitive*> &ob
 			r = Ray(pxRay, m_direction);
 		else
 		{
-			pxRay.unitise();
+			pxRay.normalize();
 			r = Ray(m_location, pxRay);
 		}
 		colors[i] = GetColor(r, 5, objects, lights, zDepth);
@@ -248,7 +248,7 @@ Color Camera::GetColor(Ray ray, int lvl, vector<Primitive*>& objects, vector<Lig
 				//shadow ray
 				HitInfo hl;
 				float3 srd = lights[k]->getPosition() - hit.getPoint(); // czemu nie odwrotnie
-				srd.unitise(); //shadow ray direction
+				srd.normalize(); //shadow ray direction
 
 				Ray sr(hit.getPoint(), srd);
 
@@ -267,7 +267,7 @@ Color Camera::GetColor(Ray ray, int lvl, vector<Primitive*>& objects, vector<Lig
 
 
 				float3 L = lights[k]->getPosition() - hit.getPoint();
-				L.unitise();
+				L.normalize();
 
 				//float LdotN = float3::dot(L, hit.getNormal());
 				float LdotN = float3::dot(hit.getNormal(), L);
@@ -275,14 +275,14 @@ Color Camera::GetColor(Ray ray, int lvl, vector<Primitive*>& objects, vector<Lig
 				if (LdotN < 0) LdotN = 0.f;
 
 				float3 H = L - ray.getDirection();
-				H.unitise();
+				H.normalize();
 
 				//	float3 R = hit.getNormal() * (2.0* (float3::dot(L, hit.getNormal()))) - L;
 
 				//	float nh = pow(float3::dot(hit.getNormal(), H), 64);
 				float nh = pow(float3::dot(hit.getNormal(), H), objectHit->getMaterial().getC());		// dla wspolczynnika rozblysku, potega 2
 
-				diffuse = id*objectHit->getColor(hit.getPoint())*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
+				diffuse = id*objectHit->getColor(hit)*LdotN*lights[k]->getColor()*vi;				// DIFFUSE
 				specular = is*nh*lights[k]->getColor()*vi;
 				diffuseSum += diffuse*brightness*vi;
 				specularSum += specular*brightness*vi;
@@ -307,7 +307,7 @@ Color Camera::GetColor(Ray ray, int lvl, vector<Primitive*>& objects, vector<Lig
 				isReflective = 1.f;
 				float NdotI = float3::dot(ray.getDirection(), hit.getNormal()); // cos kata padajacego
 				float3 R = ray.getDirection() - hit.getNormal() * 2 * NdotI;
-				R.unitise();
+				R.normalize();
 				float3 offset = R*eps3;
 
 				Ray// rayR(hit.getPoint(), R);
@@ -341,7 +341,7 @@ Color Camera::GetColor(Ray ray, int lvl, vector<Primitive*>& objects, vector<Lig
 				if (sin2t < 1.f)
 				{
 					float3 T = ray.getDirection()*n - N * (n + sqrtf(1.0f - sin2t));
-					T.unitise();
+					T.normalize();
 					float3 offset = T*eps3;
 
 					Ray rayT(hit.getPoint() + offset, T);

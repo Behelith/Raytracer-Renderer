@@ -76,7 +76,7 @@ HitInfo Sphere::Intersect(Ray &ray, float distance)
 	{
 		//	cout << "brak przeciecia" << endl;
 		//return tmp;
-		return HitInfo(float3(0, 0, 0), float3(0, 0, 0), getColor(float3()), -1);
+		return HitInfo();
 
 	}
 
@@ -84,8 +84,8 @@ HitInfo Sphere::Intersect(Ray &ray, float distance)
 		float3 p(ray.getOrigin() + ray.getDirection() * tmp);
 		//	cout << "punkt styczny: " << p << endl;
 		float3 n = p - center;
-		n.unitise();
-		return HitInfo(n, p, getColor(p), tmp);
+		n.normalize();
+		return HitInfo(n, p, Color(1.f,1.f,1.f), tmp);
 
 
 		//	return tmp;
@@ -101,9 +101,9 @@ HitInfo Sphere::Intersect(Ray &ray, float distance)
 		//	if (i1 > 0 && i2 > i1) cout << "punkt przeciecia w zadanym kierunku: " << p2 << endl;
 
 		float3 n = p - center;
-		n.unitise();
+		n.normalize();
 
-		return HitInfo(n, p, getColor(p), tmp);
+		return HitInfo(n, p, Color(1.f, 1.f, 1.f), tmp);
 		//return tmp;
 
 	}

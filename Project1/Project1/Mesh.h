@@ -1,5 +1,6 @@
 #pragma once
 #include "Primitive.h"
+//#include  "float2.h"
 #include "Triangle.h"
 
 class Mesh :
@@ -19,7 +20,7 @@ public:
 	vector <Triangle> m_triangles;
 	HitInfo Intersect(Ray &ray, float distance);
 
-	Color getColor(float3 point);
+	Color getColor(HitInfo hitinfo);
 
 
 	bool static importOBJ(string filename, vector<Mesh> &meshes);

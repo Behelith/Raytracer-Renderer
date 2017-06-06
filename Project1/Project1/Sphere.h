@@ -8,12 +8,12 @@ public:
 	Sphere(float3 center, float radius, Material &material);
 	~Sphere() {};
 
-	Color getColor(float3 point)
+	Color getColor(HitInfo hitinfo)
 	{
 		if (!m_material->getIsTextured())
 			return m_material->getColor();
 		{
-			float3 lp = point - center;
+			float3 lp = hitinfo.getPoint() - center;
 			float yDIVr = lp.y / radius;
 			float pi2 = 3.14159265359f * 2;
 			float pi = 3.14159265359f;

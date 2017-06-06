@@ -12,7 +12,7 @@ Primitive::~Primitive()
 //	delete m_color;
 }
 
-Color Primitive::getColor(float3 point)
+Color Primitive::getColor(HitInfo hitinfo)
 {
 	return m_material->getColor();
 	//	*m_color; 

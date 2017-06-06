@@ -1,12 +1,37 @@
 #include "RenderContext.h"
 
 
-void RenderContext::ScanConvertLIne(float2 a, float2 b, int side)
+RenderContext::RenderContext(int width, int height) : Bitmap (width, height)
 {
+	m_zbuffer = new float[width * height];
+	fill(m_zbuffer, m_zbuffer + (width * height), INFINITY);
+
+
+	m_scanBuffer = new int[height * 2];
+}
+
+
+
+
+
+RenderContext::~RenderContext()
+{
+	delete[] m_zbuffer;
+}
+
+void RenderContext::DrawScanBuffer(int yCoord, int xMin, int xMax)
+{
+	m_scanBuffer[yCoord * 2] = xMin;
+	m_scanBuffer[yCoord * 2 + 1 ] = xMax;
+}
+
+void RenderContext::ScanConvertLIne(vertex a, vertex b, int side)
+{
+	//a - minY vert, b - maxY vert 
 	int yStart = (int)a.GetY(),
-	yEnd = (int)b.GetY(),
-	xStart = (int)a.GetX(),
-	xEnd = (int)b.GetX();
+		yEnd = (int)b.GetY(),
+		xStart = (int)a.GetX(),
+		xEnd = (int)b.GetX();
 
 	int yDistance = yEnd - yStart;
 	int XDistance = xEnd - xStart;
@@ -19,61 +44,48 @@ void RenderContext::ScanConvertLIne(float2 a, float2 b, int side)
 	for (int j = yStart; j < yEnd; j++)
 	{
 		m_scanBuffer[j * 2 + side] = (int)currentX;
-			currentX += xStep;
+		currentX += xStep;
 	}
 
 }
-
-RenderContext::RenderContext(int width, int height) : Bitmap (width, height)
-{
-	m_zbuffer = new float[width * height];
-	fill(m_zbuffer, m_zbuffer + (width * height), INFINITY);
-
-
-	m_scanBuffer = new int[height * 2];
-}
-
-
-RenderContext::~RenderContext()
-{
-	delete[] m_zbuffer;
-}
-
-void RenderContext::DrawScanBuffer(int yCoord, int xMin, int xMax)
-{
-	m_scanBuffer[yCoord * 2] = xMin;
-	m_scanBuffer[yCoord * 2 +1 ] = xMax;
-}
-
-void RenderContext::ScanConvertTriangle(float2 a, float2 b, float2 c, int side)
+void RenderContext::ScanConvertTriangle(vertex a, vertex b, vertex c, int side)
 {
 	ScanConvertLIne(a, c, 0 + side);
 	ScanConvertLIne(a, b, 1 - side);
 	ScanConvertLIne(b, c, 1 - side);
 }
 
-void RenderContext::FillTriangle(float2 a, float2 b, float2 c)
+void RenderContext::FillTriangle(vertex a, vertex b, vertex c)
 {
 	// a = min, b = mid, c = max *w dol*
 	//float2 min = a, mid = b, max = c;
+
+//	Matrix4 screenspaceTransform = Matrix4().InitScreenSpaceTransform(getWidth() / 2, getHeight() / 2);
+	//vertex v1 = a.Transform(screenspaceTransform).PerspectiveDivide();
+	//vertex v2 = b.Transform(screenspaceTransform).PerspectiveDivide();
+	//vertex v3 = c.Transform(screenspaceTransform).PerspectiveDivide();
+	vertex v1 = a;// .Transform(screenspaceTransform).PerspectiveDivide();
+	vertex v2 = b;// .Transform(screenspaceTransform).PerspectiveDivide();
+	vertex v3 = c;// .Transform(screenspaceTransform).PerspectiveDivide();
 	
-	if (a.GetY() > b.GetY())
+
+	if (v1.GetY() > v2.GetY())
 	{
-		float2 tmp = b;
-		b = a;
-		a = tmp;
+		vertex tmp = v2;
+		v2 = v1;
+		v1 = tmp;
 	}
-	if (b.GetY() > c.GetY())
+	if (v2.GetY() > v3.GetY())
 	{
-		float2 tmp = c;
-		c = b;
-		b = tmp;
+		vertex tmp = v3;
+		v3 = v2;
+		v2 = tmp;
 	}
-	if (a.GetY() > b.GetY())
+	if (v1.GetY() > v2.GetY())
 	{
-		float2 tmp = b;
-		b = a;
-		a = tmp;
+		vertex tmp = v2;
+		v2 = v1;
+		v1 = tmp;
 	}
 
 	float area = a.TriangleArea(c, b);
@@ -99,3 +111,4 @@ void RenderContext::FillShape(int yMin, int yMax)
 	}
 }
 
+ 

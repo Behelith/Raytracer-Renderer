@@ -1,7 +1,9 @@
 #pragma once
 #include "RenderContext.h"
 #include <SDL.h>
+
 #include "structures.h"
+#include "vertex.h"
 #include "Stars3D.h"
 #include "FreeImage.h"
 
@@ -33,6 +35,7 @@ public:
 	bool initialize();
 	void close();
 	//void updateView
+
 
 
 	Display( char * title, RenderContext &renderContext);

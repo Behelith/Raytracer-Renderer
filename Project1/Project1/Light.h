@@ -1,5 +1,7 @@
 #pragma once
-#include "structures.h"
+#include "float3.h"
+#include "Color.h"
+
 
 class Light
 {

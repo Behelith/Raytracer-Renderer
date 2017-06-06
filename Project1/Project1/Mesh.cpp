@@ -43,19 +43,20 @@ HitInfo Mesh::Intersect(Ray& ray, float distance)
 
 	if (objectHit.getDistance() < INFINITY)
 	{
-		objectHit.setColor(getColor(float3()));
+		//objectHit.setColor(getColor(float3()));
+		objectHit.setColor(Color(0,0,0));
 		return objectHit;
 	}
 	return HitInfo();
 
 }
 
-Color Mesh::getColor(float3 point)
+Color Mesh::getColor(HitInfo hitinfo)
 {
 	//return *m_color;
 	if (m_material->getIsTextured())
 	{
-		tIndex = 1;
+		tIndex = hitinfo.getTIndex();
 		//m_triangles[c].
 			// pole trojkata abc =  || (b - a) X (c-a) || /2;
 
@@ -64,9 +65,9 @@ Color Mesh::getColor(float3 point)
 		float3 ab = m_vertices[m_triangles[tIndex].m_indecies[1]] - m_vertices[m_triangles[tIndex].m_indecies[0]];
 		float3 ac = m_vertices[m_triangles[tIndex].m_indecies[2]] - m_vertices[m_triangles[tIndex].m_indecies[0]];
 		float3 cb = m_vertices[m_triangles[tIndex].m_indecies[2]] - m_vertices[m_triangles[tIndex].m_indecies[1]];
-		float3 ap = point - m_vertices[m_triangles[tIndex].m_indecies[0]];
-		float3 bp = point - m_vertices[m_triangles[tIndex].m_indecies[1]];
-		float3 cp = point - m_vertices[m_triangles[tIndex].m_indecies[2]];
+		float3 ap = hitinfo.getPoint() - m_vertices[m_triangles[tIndex].m_indecies[0]];
+		float3 bp = hitinfo.getPoint() - m_vertices[m_triangles[tIndex].m_indecies[1]];
+		float3 cp = hitinfo.getPoint() - m_vertices[m_triangles[tIndex].m_indecies[2]];
 
 
 		float abc =  float3::cross(ab, ac).length() * 0.5f;
@@ -78,7 +79,7 @@ Color Mesh::getColor(float3 point)
 		// v = abp / abc
 		//float abp = float3::cross(*m_verts[1] - *m_verts[0], point - *m_verts[0]).length()*0.5f;
 		float abp = float3::cross(ab, ap).length()*0.5f;
-		float bcp = float3::cross(cb, bp).length()*0.5f;
+		//float bcp = float3::cross(cb, bp).length()*0.5f;
 
 
 		//w
@@ -100,13 +101,16 @@ Color Mesh::getColor(float3 point)
 
 		float w = 1.f - (u + v);
 		//*/
-		float2 uv1 = m_uvs[m_triangles[tIndex].m_indecies[0]] * u ;
-		float2 uv2 = m_uvs[m_triangles[tIndex].m_indecies[1]] * v;
-//		float2 uv3 = m_uvs[m_triangles[c].m_indecies[2]] * uvw.z;
+		float2 uv = m_uvs[m_triangles[tIndex].m_indecies[0]] * u +
+		/*float2 uv2 = */m_uvs[m_triangles[tIndex].m_indecies[1]] * v+
+		/*float2 uv3 = */m_uvs[m_triangles[tIndex].m_indecies[2]] * w;
+
+		
+		//		float2 uv3 = m_uvs[m_triangles[c].m_indecies[2]] * uvw.z;
 //		float2 uvw2 = uv1 + uv2 + uv3;
 
-		int x = (u* m_material->getTexture().getWidth());
-		int y = (v* m_material->getTexture().getHeight());
+		int x = (uv.GetX()* m_material->getTexture().getWidth());
+		int y = (uv.GetY()* m_material->getTexture().getHeight());
 
 		//	return Color(m_material->getTexture().getComponents()[x + y*m_material->getTexture().getWidth()]);
 

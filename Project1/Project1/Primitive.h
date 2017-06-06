@@ -4,6 +4,10 @@
 #include "Ray.h"
 #include "Material.h"
 #include "HitInfo.h"
+#include "float3.h"
+#include "float2.h"
+
+
 
 class Primitive
 {
@@ -11,7 +15,7 @@ public:
 	Primitive();
 	~Primitive();
 	//float3 getCenter() { return center; }
-	virtual Color getColor(float3 point);
+	virtual Color getColor(HitInfo hitinfo);
 	virtual HitInfo Intersect(Ray &ray, float distance);
 	virtual void setColor(Color &color);
 	virtual void setMaterial(Material &material);

@@ -28,7 +28,7 @@ Triangle::Triangle(float3* a, float3 *b, float3* c, Material &material)// : m_a(
 Triangle::Triangle(vector<int> indecies, Material& material)
 {
 	m_indecies = indecies;
-	m_normal.unitise();
+	m_normal.normalize();
 
 	setMaterial(material);
 
@@ -133,7 +133,7 @@ HitInfo Triangle::Intersect(Ray& ray, float distance, float3 a, float3 b, float3
 
 		//normalna sie liczy tak:
 		float3 n = float3::cross(e1, e2);
-		n.unitise();
+		n.normalize();
 
 		//return HitInfo(getNormal(), p, Color::WHITE, m_w);
 		return HitInfo(n, point, getColor(point), m_w);
